@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "569402810931",
+    "firebase_url": "https://chatmodule-5f50a.firebaseio.com",
+    "project_id": "chatmodule-5f50a",
+    "storage_bucket": "chatmodule-5f50a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569402810931:android:2835c8e63608dc4c6ff946",
+        "android_client_info": {
+          "package_name": "com.dexbytes.firebase_chat_module"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "569402810931-h37qlvov0na5ihrh5p3pc43j1klp2o7p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDnPFTCNFl3F_uf7z04dLDX2vkofeYPwf8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "569402810931-h37qlvov0na5ihrh5p3pc43j1klp2o7p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "569402810931-vhr8sjdf9hk0h24dgdvh8to6d77l36hl.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "test.com"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

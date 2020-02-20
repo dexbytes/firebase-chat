@@ -1,0 +1,93 @@
+name: firebase_chat
+description: A new flutter plugin project.
+version: 0.0.1
+author:
+homepage:
+
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # ***** FireBase chat setup start *****
+  firebase_database: 3.1.0
+  firebase_storage: 3.0.8
+  firebase_auth: 0.15.0+1
+  cloud_firestore: 0.12.10+2
+  firebase_messaging: 5.1.6
+#  Other
+  google_sign_in: 4.0.14
+  flutter_local_notifications: 0.8.4+3
+  fluttertoast: 3.1.3
+  shared_preferences: 0.5.4
+  pull_to_refresh: 1.5.5
+  timeago: ^2.0.22
+  flutter_cache_manager: "^1.1.2"
+  intl: 0.15.8
+  image_cropper: 1.1.1
+  image_picker: "0.6.1+8"
+  connectivity: 0.4.2
+  device_info: ^0.4.1+4
+
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+# For information on the generic Dart part of this file, see the
+# following page: https://dart.dev/tools/pub/pubspec
+
+# The following section is specific to Flutter.
+flutter:
+  # This section identifies this Flutter project as a plugin project.
+  # The androidPackage and pluginClass identifiers should not ordinarily
+  # be modified. They are used by the tooling to maintain consistency when
+  # adding or updating assets for this project.
+  plugin:
+    androidPackage: com.dexbytes.firebase_chat
+    pluginClass: FirebaseChatPlugin
+
+  # To add assets to your plugin package, add an assets section, like this:
+  assets:
+    - packages/firebase_chat/assets/images/Back1.png
+    - packages/firebase_chat/assets/images/attachment@3x.png
+    - packages/firebase_chat/assets/images/send1@2x.png
+    - packages/firebase_chat/assets/images/camera.png
+    - packages/firebase_chat/assets/images/dot@3x.png
+    - packages/firebase_chat/assets/images/dot_menu.png
+    - packages/firebase_chat/assets/images/add_border@3x.png
+    - packages/firebase_chat/assets/images/check_pink@3x.png
+    - packages/firebase_chat/assets/images/info@3x.png
+    - packages/firebase_chat/assets/images/search@3x.png
+#    - images/a_dot_ham.jpeg
+  #
+  # For details regarding assets in packages, see
+  # https://flutter.dev/assets-and-images/#from-packages
+  #
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/assets-and-images/#resolution-aware.
+
+  # To add custom fonts to your plugin package, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Gelion
+      fonts:
+        - asset: packages/firebase_chat/assets/Gelion-Regular.ttf
+        - asset: packages/firebase_chat/assets/Gelion-Medium.ttf
+        - asset: packages/firebase_chat/assets/Gelion-SemiBold.ttf
+        - asset: packages/firebase_chat/assets/Precious.ttf
+
+  #       - asset: fonts/Schyler-Italic.ttf
+  #         style: italic
+  #   - family: Trajan Pro
+  #     fonts:
+  #       - asset: fonts/TrajanPro.ttf
+  #       - asset: fonts/TrajanPro_Bold.ttf
+  #         weight: 700
+  #
+  # For details regarding fonts in packages, see
+  # https://flutter.dev/custom-fonts/#from-packages
