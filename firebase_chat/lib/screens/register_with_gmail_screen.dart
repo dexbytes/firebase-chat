@@ -495,7 +495,7 @@ class _RegisterWithEmailScreen extends State<RegisterWithEmailScreen>
                         margin: EdgeInsets.only(bottom: 10),
                       )
                     : customView.buttonRoundCornerWithBg(
-                        "Sign In",
+                        "Sign Up",
                         (isUserNameValid && isUserEmailValid && passwordVisible)
                             ? appColors.buttonTextColor
                             : appColors.buttonTextColor[100],
@@ -708,10 +708,10 @@ class _RegisterWithEmailScreen extends State<RegisterWithEmailScreen>
       MaterialPageRoute(builder: (BuildContext context) => InboxScreen(currentUserId: uId)),
       ModalRoute.withName('/'),
     );
-    Navigator.push(
+    /*Navigator.push(
         context,
         MaterialPageRoute(
             builder: (context) =>
-                RegisterWithEmailScreen()));
+                RegisterWithEmailScreen()));*/
   }
 }
