@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.blue,
       ),
-      home: DemoChet(context: context).initChatModule(context),
+      home: FireBaseChat(context: context).initChatModule(context),
     );
   }
 }
