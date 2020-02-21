@@ -1,6 +1,7 @@
 # Firebase Cloud Firestore Chat Module
 
 “Firebase Cloud Firestore Chat Module” is an open-source module built using Flutter, a powerful dart base library for building cross-platform mobile apps for Android and iOS platforms.
+
 It allows to add the following options to access your app:
 
 * Sign-in with email id and password.
