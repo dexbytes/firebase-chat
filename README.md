@@ -4,7 +4,10 @@
 It allows to add the following options to access your app:
 
 * Sign-in with email id and password.
-* Sign-in with email id and password.
+* Register a new user on fire-base authentication.
+* One to One Chat.
+* Group Chat
+* Manage your own groups
 
 The purpose of this module is to demonstrate how easily you can integrate the required login type into your Flutter app.
 
