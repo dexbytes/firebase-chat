@@ -16,10 +16,10 @@ All the screens in the app are component based to make it is easy to integrate w
 
 # Screenshots
 
+![Alt text](/screens/f_user_list.png?raw=true)
 ![Alt text](/screens/f_inbox.png?raw=true)
 ![Alt text](/screens/f_single_chat.png?raw=true)
 ![Alt text](/screens/f_group_chat.png?raw=true)
-![Alt text](/screens/f_user_list.png?raw=true)
 
 # Getting Started
 
