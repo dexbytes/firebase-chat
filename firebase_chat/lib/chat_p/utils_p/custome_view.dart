@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:ui';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_chat/chat_p/local_constant.dart';
 import 'package:firebase_chat/chat_p/utils_p/app_animation.dart';
 import 'package:firebase_chat/chat_p/utils_p/app_color.dart';
 import 'package:firebase_chat/chat_p/utils_p/app_dimens.dart';
 import 'package:firebase_chat/chat_p/utils_p/app_fonts.dart';
-import 'package:firebase_chat/chat_p/utils_p/cached_network_image_p/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CustomView {
-
   /*============hide keyboard==========*/
   hideKeyboard(ctx) {
     FocusScope.of(ctx).requestFocus(new FocusNode());
   }
+
   //get first letter from string
   getFirstLetterFromName(String word) {
     var firstAndLastLetter = "NA";
@@ -67,7 +67,9 @@ class CustomView {
     }
     return decodedValue;
   }
-  circularImageOrNameView(double height, double width, String image, String name) {
+
+  circularImageOrNameView(
+      double height, double width, String image, String name) {
     try {
       name = getDecodedValue(name);
     } catch (e) {
@@ -97,63 +99,58 @@ class CustomView {
                   ),
                   (image != null && image.trim().length > 0)
                       ? ((image.contains('http') || image.contains('https'))
-                      ?
-                  /* ? ((image.contains('png') ||
+                          ?
+                          /* ? ((image.contains('png') ||
             image.contains('jpg') ||
             image.contains('jpeg'))
             ? */
-                  CircleAvatar(
-                    radius: height / 2,
+                          CircleAvatar(
+                              radius: height / 2,
 //          backgroundImage: NetworkImage(image),
-                    backgroundImage: NetworkImage(image),
-                    backgroundColor: Colors.transparent,
-                  )
-                  /* : new CircleAvatar(
+                              backgroundImage: NetworkImage(image),
+                              backgroundColor: Colors.transparent,
+                            )
+                          /* : new CircleAvatar(
           radius: height / 2,
           backgroundImage: NetworkImage(imageNotFoundC),
         )*/
-                      : image.contains('assets')
-                      ? new CircleAvatar(
-                    radius: height / 2,
-                    backgroundImage: /*image.contains('http')?Image.network(image)*/ AssetImage(
-                        image),
-                  )
+                          : image.contains('assets')
+                              ? new CircleAvatar(
+                                  radius: height / 2,
+                                  backgroundImage: /*image.contains('http')?Image.network(image)*/ AssetImage(
+                                      image),
+                                )
+                              : new CircleAvatar(
+                                  radius: height / 2,
+                                  backgroundImage: /*image.contains('http')?Image.network(image)*/ FileImage(
+                                      File(image)),
+                                ))
                       : new CircleAvatar(
-                    radius: height / 2,
-                    backgroundImage: /*image.contains('http')?Image.network(image)*/ FileImage(
-                        File(image)),
-                  ))
-                      : new CircleAvatar(
-                    radius: height / 2,
-                    backgroundImage: NetworkImage(imageNotFoundC),
-                  )
+                          radius: height / 2,
+                          backgroundImage: NetworkImage(imageNotFoundC),
+                        )
                 ],
               )));
     } else {
-      var firstAndLastLetter =
-      getFirstLetterFromName(name);
+      var firstAndLastLetter = getFirstLetterFromName(name);
       return firstAndLastLetter != null
           ? Center(
-          child: new Container(
-              decoration: new BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                  appColors.iconColor[400]),
-              height: height,
-              width: width,
-              child: Center(
-                child: Text(
-                  //count == 1 ? '1' : "+$count",
-                    firstAndLastLetter != null ? firstAndLastLetter : "",
-                    style: TextStyle(
-                        fontFamily:
-                        appFonts.defaultFont,
-                        fontSize: appDimens.fontSize(value: 14),
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 2.0,
-                        color: appColors
-                            .primaryColor)),
-              )))
+              child: new Container(
+                  decoration: new BoxDecoration(
+                      shape: BoxShape.circle, color: appColors.iconColor[400]),
+                  height: height,
+                  width: width,
+                  child: Center(
+                    child: Text(
+                        //count == 1 ? '1' : "+$count",
+                        firstAndLastLetter != null ? firstAndLastLetter : "",
+                        style: TextStyle(
+                            fontFamily: appFonts.defaultFont,
+                            fontSize: appDimens.fontSize(value: 14),
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 2.0,
+                            color: appColors.primaryColor)),
+                  )))
           : Container();
     }
   }
@@ -173,10 +170,8 @@ class CustomView {
         });*/
 
         return Container(
-          height:
-          appDimens.heightDynamic(value: height),
-          width:
-          appDimens.heightDynamic(value: width),
+          height: appDimens.heightDynamic(value: height),
+          width: appDimens.heightDynamic(value: width),
           decoration: BoxDecoration(
             shape: BoxShape.rectangle,
             borderRadius: BorderRadius.all(Radius.circular(9)),
@@ -190,10 +185,8 @@ class CustomView {
         );
       },
       placeholder: (context, url) => Container(
-        height:
-        appDimens.heightDynamic(value: height),
-        width:
-        appDimens.heightDynamic(value: height),
+        height: appDimens.heightDynamic(value: height),
+        width: appDimens.heightDynamic(value: height),
         /* AppValuesFilesLink()
             .appValuesDimens
             .heightDynamic(value: height),*/
@@ -203,8 +196,7 @@ class CustomView {
           borderRadius: BorderRadius.all(Radius.circular(9)),
           //It is just a dummy image
         ),
-        child: appAnimation
-            .mShimmerEffectClass.shimmerEffectNewsFeedList(
+        child: appAnimation.mShimmerEffectClass.shimmerEffectNewsFeedList(
             shimmerBaseColor: null,
             shimmerHighlightColor: null,
             height: height,
@@ -272,15 +264,14 @@ class CustomView {
     );
   }
 
-
   //BottomSheet for take media
   Future confirmationBottomSheet(
       {Key key,
-        context,
-        headerTitle,
-        view,
-        sheetDismissCallback,
-        screenWidth}) {
+      context,
+      headerTitle,
+      view,
+      sheetDismissCallback,
+      screenWidth}) {
     /********* Image cropping End ********** */
     return showModalBottomSheet(
         context: context,
@@ -320,9 +311,10 @@ class CustomView {
                                   : 0,
                               bottom: appDimens.verticalMarginPadding(
                                   value:
-                                  8), // bottom margin also added in divider
+                                      8), // bottom margin also added in divider
                               left: appDimens.verticalMarginPadding(value: 25),
-                              right:appDimens.verticalMarginPadding(value: 25)),
+                              right:
+                                  appDimens.verticalMarginPadding(value: 25)),
                           child: Text(
                             headerTitle ?? "",
                             style: TextStyle(
@@ -344,15 +336,15 @@ class CustomView {
   Icon suffixIconForPassword(bool oldpasswordVisible) {
     return oldpasswordVisible
         ? Icon(
-      Icons.visibility_off,
-      color: appColors.passwordVisibleEyeColor,
-      size: 20,
-    )
+            Icons.visibility_off,
+            color: appColors.passwordVisibleEyeColor,
+            size: 20,
+          )
         : Icon(
-      Icons.visibility,
-      color:  appColors.passwordVisibleEyeColor,
-      size: 20,
-    );
+            Icons.visibility,
+            color: appColors.passwordVisibleEyeColor,
+            size: 20,
+          );
 
     /*Image(
             image: AssetImage("assets/images/home_module_images/NoSeen.png"),
@@ -365,6 +357,7 @@ class CustomView {
             width: 25,
           );*/
   }
+
 /*=========================ui for input field suffix icon with validation===============*/
   SizedBox passwordFieldWithErrorNSuffixIcon(
       bool visible,
@@ -384,7 +377,7 @@ class CustomView {
         //controller: controller,
         textAlign: TextAlign.left,
         decoration: InputDecoration(
-          //contentPadding: EdgeInsets.only(right: 30.0),
+            //contentPadding: EdgeInsets.only(right: 30.0),
             hintText: hint,
             contentPadding: EdgeInsets.only(top: 20, bottom: 5),
             alignLabelWithHint: true,
@@ -400,17 +393,14 @@ class CustomView {
               ),
             ),
             focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color: appColors.wordGreyColor)),
+                borderSide: BorderSide(color: appColors.wordGreyColor)),
             // Here is key idea
             suffixIcon: iconButton,
             errorBorder: error != null
                 ? UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color:appColors.primaryColor))
+                    borderSide: BorderSide(color: appColors.primaryColor))
                 : UnderlineInputBorder(
-                borderSide: BorderSide(
-                    color: appColors.whiteUnSelected)),
+                    borderSide: BorderSide(color: appColors.whiteUnSelected)),
             errorText: error),
         onChanged: ontextChanged,
         onFieldSubmitted: onFieldSubmit,
@@ -426,32 +416,32 @@ class CustomView {
 
   TextField inputPasswordFields(
       {Key key,
-        @required int keyboardType,
-        @required int inputAction,
-        @required int maxLength,
-        @required bool readOnly,
-        @required bool showPass,
-        FocusNode focusNode,
-        @required TextEditingController controller,
-        @required String hint,
-        @required double fontSize,
-        String error,
-        String prefixString,
-        double focusedBorderWidth,
-        IconButton iconButton,
-        double borderRadius,
-        Color errorColor,
-        Color hintTextColor,
-        int maxLines,
-        EdgeInsetsGeometry padding,
-        TextAlign textAlign,
-        Color fillColor,
-        Color borderColor,
-        Color focusedBorderColor,
-        Color enabledBorder,
-        Color cursorColor,
-        @required Function(String) ontextChanged,
-        @required Function(String) onSubmit}) {
+      @required int keyboardType,
+      @required int inputAction,
+      @required int maxLength,
+      @required bool readOnly,
+      @required bool showPass,
+      FocusNode focusNode,
+      @required TextEditingController controller,
+      @required String hint,
+      @required double fontSize,
+      String error,
+      String prefixString,
+      double focusedBorderWidth,
+      IconButton iconButton,
+      double borderRadius,
+      Color errorColor,
+      Color hintTextColor,
+      int maxLines,
+      EdgeInsetsGeometry padding,
+      TextAlign textAlign,
+      Color fillColor,
+      Color borderColor,
+      Color focusedBorderColor,
+      Color enabledBorder,
+      Color cursorColor,
+      @required Function(String) ontextChanged,
+      @required Function(String) onSubmit}) {
     return TextField(
       controller: controller,
       focusNode: focusNode,
@@ -463,20 +453,22 @@ class CustomView {
       keyboardType: keyboardType == 1
           ? TextInputType.number
           : keyboardType == 2
-          ? TextInputType.emailAddress
-          : keyboardType == 3 ? TextInputType.text : TextInputType.text,
+              ? TextInputType.emailAddress
+              : keyboardType == 3
+                  ? TextInputType.text
+                  : TextInputType.text,
       textCapitalization: keyboardType == 3
           ? TextCapitalization.words
           : keyboardType == 3
-          ? TextCapitalization.sentences
-          : TextCapitalization.none,
+              ? TextCapitalization.sentences
+              : TextCapitalization.none,
       textInputAction: inputAction == 1
           ? TextInputAction.done
           : inputAction == 2
-          ? TextInputAction.next
-          : inputAction == 3
-          ? TextInputAction.newline
-          : TextInputAction.done,
+              ? TextInputAction.next
+              : inputAction == 3
+                  ? TextInputAction.newline
+                  : TextInputAction.done,
       inputFormatters: keyboardType == 1
           ? <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly]
           : <TextInputFormatter>[],
@@ -485,12 +477,8 @@ class CustomView {
       decoration: InputDecoration(
           suffixIcon: iconButton,
           filled: true,
-          fillColor: fillColor != null
-              ? fillColor
-              : appColors.editTextBgColor,
-          hintText: hint != null
-              ? hint
-              : appColors.editTextHintColor,
+          fillColor: fillColor != null ? fillColor : appColors.editTextBgColor,
+          hintText: hint != null ? hint : appColors.editTextHintColor,
           contentPadding: padding != null ? padding : EdgeInsets.all(0),
           //counterText: inputAction == 3 ? (controller != null ? controller.text.length.toString() : '') : "",
           counterText: "",
@@ -535,42 +523,39 @@ class CustomView {
           errorText: error,
           errorMaxLines: 2),
       onSubmitted: onSubmit,
-      style: TextStyle(
-          color: appColors.textNormalColor[400]),
+      style: TextStyle(color: appColors.textNormalColor[400]),
 
       onChanged: ontextChanged,
-      cursorColor: cursorColor != null
-          ? cursorColor
-          : appColors.editCursorColor,
+      cursorColor:
+          cursorColor != null ? cursorColor : appColors.editCursorColor,
     );
   }
 
-
   TextField inputFields(
       {Key key,
-        @required int keyboardType,
-        @required int inputAction,
-        @required int maxLength,
-        @required bool readOnly,
-        FocusNode focusNode,
-        @required TextEditingController controller,
-        @required String hint,
-        @required double fontSize,
-        String error,
-        double focusedBorderWidth,
-        double borderRadius,
-        Color errorColor,
-        Color hintTextColor,
-        int maxLines,
-        EdgeInsetsGeometry padding,
-        TextAlign textAlign,
-        Color fillColor,
-        Color borderColor,
-        Color focusedBorderColor,
-        Color enabledBorder,
-        Color cursorColor,
-        @required Function(String) ontextChanged,
-        @required Function(String) onSubmit}) {
+      @required int keyboardType,
+      @required int inputAction,
+      @required int maxLength,
+      @required bool readOnly,
+      FocusNode focusNode,
+      @required TextEditingController controller,
+      @required String hint,
+      @required double fontSize,
+      String error,
+      double focusedBorderWidth,
+      double borderRadius,
+      Color errorColor,
+      Color hintTextColor,
+      int maxLines,
+      EdgeInsetsGeometry padding,
+      TextAlign textAlign,
+      Color fillColor,
+      Color borderColor,
+      Color focusedBorderColor,
+      Color enabledBorder,
+      Color cursorColor,
+      @required Function(String) ontextChanged,
+      @required Function(String) onSubmit}) {
     return TextField(
       controller: controller,
       focusNode: focusNode,
@@ -581,20 +566,22 @@ class CustomView {
       keyboardType: keyboardType == 1
           ? TextInputType.number
           : keyboardType == 2
-          ? TextInputType.emailAddress
-          : keyboardType == 3 ? TextInputType.text : TextInputType.text,
+              ? TextInputType.emailAddress
+              : keyboardType == 3
+                  ? TextInputType.text
+                  : TextInputType.text,
       textCapitalization: keyboardType == 3
           ? TextCapitalization.words
           : keyboardType == 3
-          ? TextCapitalization.sentences
-          : TextCapitalization.none,
+              ? TextCapitalization.sentences
+              : TextCapitalization.none,
       textInputAction: inputAction == 1
           ? TextInputAction.done
           : inputAction == 2
-          ? TextInputAction.next
-          : inputAction == 3
-          ? TextInputAction.newline
-          : TextInputAction.done,
+              ? TextInputAction.next
+              : inputAction == 3
+                  ? TextInputAction.newline
+                  : TextInputAction.done,
       inputFormatters: keyboardType == 1
           ? <TextInputFormatter>[WhitelistingTextInputFormatter.digitsOnly]
           : <TextInputFormatter>[],
@@ -602,12 +589,8 @@ class CustomView {
       maxLines: maxLines != null ? maxLines : 1,
       decoration: InputDecoration(
         filled: true,
-        fillColor: fillColor != null
-            ? fillColor
-            : appColors.editTextBgColor,
-        hintText: hint != null
-            ? hint
-            : appColors.editTextHintColor,
+        fillColor: fillColor != null ? fillColor : appColors.editTextBgColor,
+        hintText: hint != null ? hint : appColors.editTextHintColor,
         contentPadding: padding != null ? padding : EdgeInsets.all(0),
         //counterText: inputAction == 3 ? (controller != null ? controller.text.length.toString() : '') : "",
         counterText: "",
@@ -652,17 +635,13 @@ class CustomView {
         errorText: error,
       ),
       onSubmitted: onSubmit,
-      style: TextStyle(
-          color: appColors.textNormalColor[400]),
+      style: TextStyle(color: appColors.textNormalColor[400]),
 
       onChanged: ontextChanged,
-      cursorColor: cursorColor != null
-          ? cursorColor
-          : appColors.editCursorColor,
+      cursorColor:
+          cursorColor != null ? cursorColor : appColors.editCursorColor,
     );
   }
-
-
 
   RaisedButton buttonRoundCornerWithBgAndLeftImage(
       String label,
@@ -701,8 +680,7 @@ class CustomView {
                         textAlign: TextAlign.center,
                         maxLines: 1,
                         style: TextStyle(
-                            fontFamily:
-                            appFonts.defaultFont,
+                            fontFamily: appFonts.defaultFont,
                             color: labelColor,
                             fontSize: textSize,
                             fontWeight: FontWeight.w400),
@@ -719,22 +697,20 @@ class CustomView {
     );
   }
 
-
   circleTextView(double height, double width, double fontSize, int count,
       Color circleTextColor, Color circleBgColor) {
     return Center(
         child: new Container(
             decoration:
-            new BoxDecoration(shape: BoxShape.circle, color: circleBgColor),
+                new BoxDecoration(shape: BoxShape.circle, color: circleBgColor),
             height: height,
             width: width,
             child: Center(
               child: Text(
-                // count == 1 ? '1' : "+$count",
+                  // count == 1 ? '1' : "+$count",
                   "+$count",
                   style: TextStyle(
-                      fontFamily:
-                      appFonts.defaultFont,
+                      fontFamily: appFonts.defaultFont,
                       fontSize: fontSize,
                       fontWeight: FontWeight.w600,
                       color: circleTextColor)),
@@ -753,10 +729,10 @@ class CustomView {
             //child: new Image.network(image, fit: BoxFit.cover, gaplessPlayback: true)));
             child: (image.contains('http') || image.contains('https'))
                 ? new Image.network(image,
-                fit: BoxFit.cover, gaplessPlayback: true)
+                    fit: BoxFit.cover, gaplessPlayback: true)
                 : image.contains('assets')
-                ? AssetImage(image)
-                : Image.file(File(image), fit: BoxFit.cover)));
+                    ? AssetImage(image)
+                    : Image.file(File(image), fit: BoxFit.cover)));
   }
 
   String getTimeByMilliseconds(int timestamp, String formate) {
@@ -771,8 +747,6 @@ class CustomView {
     }
     return formattedTime;
   }
-
 }
 
 final customView = CustomView();
-

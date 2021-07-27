@@ -117,6 +117,7 @@ class ChatScreenState extends State<GroupChatScreen> {
     // Clean up the controller when the widget is disposed.
     super.dispose();
   }
+
   void onFocusChange() {
     if (focusNode.hasFocus) {
       // Hide sticker when keyboard appear
@@ -128,16 +129,13 @@ class ChatScreenState extends State<GroupChatScreen> {
 
   readLocal() async {
     prefs = await SharedPreferences.getInstance();
-    sharedPreferencesFile
-        .readStr(userFullNameC)
-        .then((value) {
+    sharedPreferencesFile.readStr(userFullNameC).then((value) {
       setState(() {
         name = value;
       });
     });
 
-    sharedPreferencesFile.readStr(UserProfileImageThumbnailC)
-        .then((value) {
+    sharedPreferencesFile.readStr(UserProfileImageThumbnailC).then((value) {
       setState(() {
         selfAvatar = value;
       });
@@ -154,10 +152,10 @@ class ChatScreenState extends State<GroupChatScreen> {
     else {
       groupChatId = '$peerId-$id';
     }
-    Firestore.instance
+    FirebaseFirestore.instance
         .collection('users')
-        .document(id)
-        .updateData({'chattingWith': peerId});
+        .doc(id)
+        .update({'chattingWith': peerId});
     setState(() {});
   }
 
@@ -182,6 +180,7 @@ class ChatScreenState extends State<GroupChatScreen> {
           }
         });
   }
+
   void getSticker() {
     // Hide keyboard when sticker appear
     focusNode.unfocus();
@@ -189,11 +188,13 @@ class ChatScreenState extends State<GroupChatScreen> {
       isShowSticker = !isShowSticker;
     });
   }
+
   Future uploadFile() async {
     String selfUserId = await sharedPreferencesFile.readStr(chatUid);
-    if(selfUserId!=null){
-      var imageUrlTemp = await _firebaseStore.uploadFileFireBase(imageFile: imageFile);
-      if(imageUrlTemp!=null){
+    if (selfUserId != null) {
+      var imageUrlTemp =
+          await _firebaseStore.uploadFileFireBase(imageFile: imageFile);
+      if (imageUrlTemp != null) {
         imageUrl = imageUrlTemp.toString();
         setState(() {
           isLoading = false;
@@ -212,7 +213,14 @@ class ChatScreenState extends State<GroupChatScreen> {
       }
       textEditingController.clear();
       //Sent message
-      await _firebaseStore.sentMessageFireBase(uId: id,peerId: peerId,groupChatId: groupChatId,name: name,content: content,type: type,isFromGroup: true);
+      await _firebaseStore.sentMessageFireBase(
+          uId: id,
+          peerId: peerId,
+          groupChatId: groupChatId,
+          name: name,
+          content: content,
+          type: type,
+          isFromGroup: true);
       if (fcmGroupDetails != null) {
         try {
           if (fcmGroupDetails['usersDetails'] != null &&
@@ -255,8 +263,7 @@ class ChatScreenState extends State<GroupChatScreen> {
 
   Widget buildItem(int index, DocumentSnapshot document) {
     String date = projectUtil.getCompareDateStr(
-        document['timestamp'],
-       appString.dateFormat,index);
+        document['timestamp'], appString.dateFormat, index);
     if (document['idFrom'] == id) {
       messageCountSent++;
       //Self messages
@@ -269,7 +276,8 @@ class ChatScreenState extends State<GroupChatScreen> {
                     Expanded(
                       child: new Container(
                         margin: EdgeInsets.only(
-                            right: appDimens.horizontalMarginPadding(value: 10)),
+                            right:
+                                appDimens.horizontalMarginPadding(value: 10)),
                         child: Divider(
                           color: appColors.appListDividerColor[600],
                           height: 50,
@@ -307,31 +315,30 @@ class ChatScreenState extends State<GroupChatScreen> {
                       ? Container(
                           child: Text(
                             document['content'],
-                            style: TextStyle(
-                                color: appColors.chatSelfTextColor),
+                            style:
+                                TextStyle(color: appColors.chatSelfTextColor),
                           ),
                           padding: EdgeInsets.fromLTRB(
                               appDimens.horizontalMarginPadding(
-                                      value:
-                                          document['content'].toString().length > 22
-                                              ? 28
-                                              : 15),
+                                  value:
+                                      document['content'].toString().length > 22
+                                          ? 28
+                                          : 15),
                               appDimens.horizontalMarginPadding(
-                                      value:
-                                          document['content'].toString().length > 22
-                                              ? 20
-                                              : 15),
+                                  value:
+                                      document['content'].toString().length > 22
+                                          ? 20
+                                          : 15),
                               appDimens.horizontalMarginPadding(
-                                      value:
-                                          document['content'].toString().length > 22
-                                              ? 28
-                                              : 15),
+                                  value:
+                                      document['content'].toString().length > 22
+                                          ? 28
+                                          : 15),
                               appDimens.horizontalMarginPadding(
-                                      value:
-                                          document['content'].toString().length >
-                                                  22
-                                              ? 20
-                                              : 15)),
+                                  value:
+                                      document['content'].toString().length > 22
+                                          ? 20
+                                          : 15)),
                           constraints:
                               BoxConstraints(minWidth: 10, maxWidth: 250),
                           decoration: BoxDecoration(
@@ -357,17 +364,17 @@ class ChatScreenState extends State<GroupChatScreen> {
                                               bottomLeft:
                                                   Radius.circular(8.0))),
                                       child: customView.chatUploadedImageView1(
-                                              appDimens.imageSquareAccordingScreen(
-                                                      value: 125),
-                                              appDimens.imageSquareAccordingScreen(
-                                                      value: 125),
-                                              document['content'])),
+                                          appDimens.imageSquareAccordingScreen(
+                                              value: 125),
+                                          appDimens.imageSquareAccordingScreen(
+                                              value: 125),
+                                          document['content'])),
                                 ),
                                 onPressed: () {
                                   try {
                                     List<String> imageList = new List();
                                     imageList.add(document['content']);
-                                   /* Navigator.push(
+                                    /* Navigator.push(
                                         context,
                                         SlideRightRoute(
                                             widget: AppScreensFilesLink()
@@ -398,11 +405,11 @@ class ChatScreenState extends State<GroupChatScreen> {
                             ),
                   isLastMessageLeft(index)
                       ? Material(
-                          child:customView.circularImageOrNameView(
-                                  appDimens.imageSquareAccordingScreen(value: 34),
-                                  appDimens.imageSquareAccordingScreen(value: 34),
-                                  selfAvatar,
-                                  name),
+                          child: customView.circularImageOrNameView(
+                              appDimens.imageSquareAccordingScreen(value: 34),
+                              appDimens.imageSquareAccordingScreen(value: 34),
+                              selfAvatar,
+                              name),
                           borderRadius: BorderRadius.all(
                             Radius.circular(18.0),
                           ),
@@ -418,12 +425,11 @@ class ChatScreenState extends State<GroupChatScreen> {
             isLastMessageLeft(index)
                 ? Container(
                     child: Text(
-                      DateFormat(appString.timeFormat)
-                          .format(DateTime.fromMillisecondsSinceEpoch(
+                      DateFormat(appString.timeFormat).format(
+                          DateTime.fromMillisecondsSinceEpoch(
                               int.parse(document['timestamp']))),
                       style: TextStyle(
-                          color: appColors.datetimeColor,
-                          fontSize: 12.0),
+                          color: appColors.datetimeColor, fontSize: 12.0),
                     ),
                     margin: EdgeInsets.only(
                         //  left: 5.0,
@@ -450,7 +456,8 @@ class ChatScreenState extends State<GroupChatScreen> {
                     Expanded(
                       child: new Container(
                         margin: EdgeInsets.only(
-                            right: appDimens.horizontalMarginPadding(value: 10)),
+                            right:
+                                appDimens.horizontalMarginPadding(value: 10)),
                         child: Divider(
                           color: appColors.appListDividerColor[600],
                           height: 50,
@@ -486,10 +493,10 @@ class ChatScreenState extends State<GroupChatScreen> {
                     isLastMessageLeft(index)
                         ? Material(
                             child: FutureBuilder(
-                              future: Firestore.instance
+                              future: FirebaseFirestore.instance
                                   .collection('users')
                                   .where('id', isEqualTo: document['idFrom'])
-                                  .getDocuments(),
+                                  .get(),
                               builder: (BuildContext context,
                                   AsyncSnapshot<dynamic> snapshot) {
                                 if (snapshot.hasData) {
@@ -499,8 +506,8 @@ class ChatScreenState extends State<GroupChatScreen> {
                                   if (documents.length != 0) {
                                     /*ProjectUtil.printP(
                                         "UsrData ", "$documents");*/
-                                    var dta = documents[0].data['imageUrl'];
-                                    var name = documents[0].data['nickName'];
+                                    var dta = documents[0]['imageUrl'];
+                                    var name = documents[0]['nickName'];
                                     return GestureDetector(
                                         onTap: () {
                                           /*Navigator.push(
@@ -522,10 +529,13 @@ class ChatScreenState extends State<GroupChatScreen> {
                                                               isFromChat:
                                                                   true)));*/
                                         },
-                                        child: customView.circularImageOrNameView(
-                                                appDimens.imageSquareAccordingScreen(
+                                        child:
+                                            customView.circularImageOrNameView(
+                                                appDimens
+                                                    .imageSquareAccordingScreen(
                                                         value: 34),
-                                                appDimens.imageSquareAccordingScreen(
+                                                appDimens
+                                                    .imageSquareAccordingScreen(
                                                         value: 34),
                                                 dta,
                                                 name));
@@ -550,27 +560,29 @@ class ChatScreenState extends State<GroupChatScreen> {
                             ),
                             padding: EdgeInsets.fromLTRB(
                                 appDimens.horizontalMarginPadding(
-                                        value: document['content']
-                                                    .toString()
-                                                    .length >
+                                    value:
+                                        document['content'].toString().length >
                                                 22
                                             ? 28
                                             : 15),
                                 appDimens.horizontalMarginPadding(
-                                        value:
-                                            document['content'].toString().length > 22
-                                                ? 20
-                                                : 15),
+                                    value:
+                                        document['content'].toString().length >
+                                                22
+                                            ? 20
+                                            : 15),
                                 appDimens.horizontalMarginPadding(
-                                        value:
-                                            document['content'].toString().length > 22
-                                                ? 28
-                                                : 15),
+                                    value:
+                                        document['content'].toString().length >
+                                                22
+                                            ? 28
+                                            : 15),
                                 appDimens.horizontalMarginPadding(
-                                        value:
-                                            document['content'].toString().length > 22
-                                                ? 20
-                                                : 15)),
+                                    value:
+                                        document['content'].toString().length >
+                                                22
+                                            ? 20
+                                            : 15)),
                             constraints:
                                 BoxConstraints(minWidth: 10, maxWidth: 250),
                             decoration: BoxDecoration(
@@ -593,10 +605,13 @@ class ChatScreenState extends State<GroupChatScreen> {
                                                 topRight: Radius.circular(8.0),
                                                 bottomRight:
                                                     Radius.circular(8.0))),
-                                        child: customView.chatUploadedImageView1(
-                                                appDimens.imageSquareAccordingScreen(
+                                        child:
+                                            customView.chatUploadedImageView1(
+                                                appDimens
+                                                    .imageSquareAccordingScreen(
                                                         value: 125),
-                                                appDimens.imageSquareAccordingScreen(
+                                                appDimens
+                                                    .imageSquareAccordingScreen(
                                                         value: 125),
                                                 document['content'])),
                                   ),
@@ -638,12 +653,11 @@ class ChatScreenState extends State<GroupChatScreen> {
                 ? Container(
                     child: Text(
 //                DateFormat('dd MMM kk:mm')
-                      DateFormat(appString.timeFormat)
-                          .format(DateTime.fromMillisecondsSinceEpoch(
+                      DateFormat(appString.timeFormat).format(
+                          DateTime.fromMillisecondsSinceEpoch(
                               int.parse(document['timestamp']))),
                       style: TextStyle(
-                          color: appColors.datetimeColor,
-                          fontSize: 12.0),
+                          color: appColors.datetimeColor, fontSize: 12.0),
                     ),
                     margin: EdgeInsets.only(left: 64.0, top: 5.0, bottom: 5.0),
                   )
@@ -684,10 +698,10 @@ class ChatScreenState extends State<GroupChatScreen> {
         isShowSticker = false;
       });
     } else {
-      Firestore.instance
+      FirebaseFirestore.instance
           .collection('users')
-          .document(id)
-          .updateData({'chattingWith': null});
+          .doc(id)
+          .update({'chattingWith': null});
       Navigator.pop(context);
     }
 
@@ -705,20 +719,17 @@ class ChatScreenState extends State<GroupChatScreen> {
     }
 
     //App bar
-    Widget appBar = appBarBackArrowWithTitleAndSubTitle.appBarWithLeftRightIconTitleSubtitle(
+    Widget appBar = appBarBackArrowWithTitleAndSubTitle
+        .appBarWithLeftRightIconTitleSubtitle(
             statusbarHeight: MediaQuery.of(context).padding.top,
             title: groupName,
             back: true,
             appBarBgColor: appColors.appBarBgColor,
-            titleColor:
-                appColors.appBarTextColor[600],
-            titleFontSize:
-                appDimens.fontSize(value: 20),
+            titleColor: appColors.appBarTextColor[600],
+            titleFontSize: appDimens.fontSize(value: 20),
             rightIcon: 'packages/firebase_chat/assets/images/info@3x.png',
-            rightIconSize:
-                appDimens.widthDynamic(value: 22),
-            leftIconSize:
-                appDimens.widthDynamic(value: 20),
+            rightIconSize: appDimens.widthDynamic(value: 22),
+            leftIconSize: appDimens.widthDynamic(value: 20),
             onPressed: () {
               Navigator.pop(context);
             },
@@ -880,9 +891,7 @@ class ChatScreenState extends State<GroupChatScreen> {
       ),
       decoration: new BoxDecoration(
           border: new Border(
-              top: new BorderSide(
-                  color: appColors.grey,
-                  width: 0.5)),
+              top: new BorderSide(color: appColors.grey, width: 0.5)),
           color: Colors.white),
       padding: EdgeInsets.all(5.0),
       height: 180.0,
@@ -922,8 +931,7 @@ class ChatScreenState extends State<GroupChatScreen> {
                 controller: textEditingController,
                 decoration: InputDecoration.collapsed(
                   hintText: 'Type your message...',
-                  hintStyle: TextStyle(
-                      color: appColors.editTextHintColor[200]),
+                  hintStyle: TextStyle(color: appColors.editTextHintColor[200]),
                 ),
                 focusNode: focusNode,
               ),
@@ -955,8 +963,7 @@ class ChatScreenState extends State<GroupChatScreen> {
             child: new Container(
                 margin: new EdgeInsets.only(top: 0.0, bottom: 0.0, right: 20.0),
                 // padding: new EdgeInsets.only(top: 0,bottom:0,right:5.0),
-                child:
-                    GestureDetector(
+                child: GestureDetector(
                   child: Container(
                     child: Stack(
                       children: <Widget>[
@@ -964,12 +971,10 @@ class ChatScreenState extends State<GroupChatScreen> {
                           height: appDimens.heightDynamic(value: 35),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: appColors.primaryColor
-                                .withOpacity(0.1),
+                            color: appColors.primaryColor.withOpacity(0.1),
                             boxShadow: [
                               BoxShadow(
-                                color: appColors.primaryColor
-                                    .withOpacity(0.22),
+                                color: appColors.primaryColor.withOpacity(0.22),
                                 spreadRadius: 4,
                                 blurRadius: 5,
                                 offset:
@@ -979,8 +984,10 @@ class ChatScreenState extends State<GroupChatScreen> {
                           ),
                           child: Image.asset(
                             'packages/firebase_chat/assets/images/send1@2x.png',
-                            height: appDimens.imageSquareAccordingScreen(value: 35),
-                            width: appDimens.imageSquareAccordingScreen(value: 35),
+                            height:
+                                appDimens.imageSquareAccordingScreen(value: 35),
+                            width:
+                                appDimens.imageSquareAccordingScreen(value: 35),
                           ),
                         )
                       ],
@@ -996,9 +1003,7 @@ class ChatScreenState extends State<GroupChatScreen> {
       padding: EdgeInsets.only(top: 0),
       decoration: new BoxDecoration(
           border: new Border(
-              top: new BorderSide(
-                  color: appColors.grey,
-                  width: 0.5)),
+              top: new BorderSide(color: appColors.grey, width: 0.5)),
           color: appColors.editTextBgColor[500]),
     );
   }
@@ -1011,8 +1016,7 @@ class ChatScreenState extends State<GroupChatScreen> {
           margin: EdgeInsets.only(
               right: appDimens.horizontalMarginPadding(value: 10)),
           child: Divider(
-            color:
-                appColors.appListDividerColor[600],
+            color: appColors.appListDividerColor[600],
             height: 50,
           ),
         ),
@@ -1023,8 +1027,7 @@ class ChatScreenState extends State<GroupChatScreen> {
           margin: EdgeInsets.only(
               left: appDimens.horizontalMarginPadding(value: 10)),
           child: Divider(
-            color:
-                appColors.appListDividerColor[600],
+            color: appColors.appListDividerColor[600],
             height: 50,
           ),
         ),
@@ -1037,10 +1040,8 @@ class ChatScreenState extends State<GroupChatScreen> {
     if (index == 0) {
       startDate = null;
     }
-    var currentDate =
-        DateFormat(appString.dateFormat).format(
-            DateTime.fromMillisecondsSinceEpoch(
-                int.parse(document['timestamp'])));
+    var currentDate = DateFormat(appString.dateFormat).format(
+        DateTime.fromMillisecondsSinceEpoch(int.parse(document['timestamp'])));
     if (startDate == null) {
       startDate = currentDate;
       return currentDate;
@@ -1063,9 +1064,9 @@ class ChatScreenState extends State<GroupChatScreen> {
                   valueColor: AlwaysStoppedAnimation<Color>(
                       appColors.loaderColor[300])))
           : StreamBuilder(
-              stream: Firestore.instance
+              stream: FirebaseFirestore.instance
                   .collection('messages')
-                  .document(groupChatId)
+                  .doc(groupChatId)
                   .collection(groupChatId)
                   .orderBy('timestamp', descending: true)
                   .limit(20)

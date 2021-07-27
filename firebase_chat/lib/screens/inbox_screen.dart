@@ -26,6 +26,7 @@ class InboxScreen extends StatefulWidget {
   @override
   _InboxScreen createState() => _InboxScreen(currentUserId: this.currentUserId);
 }
+
 class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
   int followersOrFollowing = 2;
   String currentUserId;
@@ -34,7 +35,6 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
   bool isLoading = false;
   List<dynamic> inboxList = new List();
   List<dynamic> inboxUserDetailsList = new List();
-
 
   int followStatus = 0;
   int fcmDataretrayCount = 3;
@@ -46,15 +46,12 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
 
   StreamController<dynamic> streamController = new StreamController();
 
-
   _InboxScreen({Key key, @required this.currentUserId}) {
-    appDimens.appDimensFind(context: context);  //To find current screen width
-    if(currentUserId==null){
-      currentUserId ="";
+    //To find current screen width
+    if (currentUserId == null) {
+      currentUserId = "";
     }
-    sharedPreferencesFile
-        .readStr('chatUid')
-        .then((value) {
+    sharedPreferencesFile.readStr('chatUid').then((value) {
       if (value != null && value.trim().length > 0) {
         setState(() {
           selfUserChatId = value;
@@ -95,7 +92,8 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
   }
 
   /*Pul To refresh*/
-  RefreshController _refreshController =  RefreshController(initialRefresh: false);
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   /*Pul To refresh*/
   void _onRefresh() async {
     _refreshController.refreshCompleted();
@@ -105,9 +103,9 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
     if (mounted) setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
+    appDimens.appDimensFind(context: context);
     screenSize = MediaQuery.of(context).size;
     screenHeight = screenSize.height; //Device Screen height
     screenWidth = screenSize.width; //Device Screen Width
@@ -127,8 +125,7 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
             body = CupertinoActivityIndicator();
           } else if (mode == LoadStatus.failed) {
             body = Text("Load Failed!Click retry!");
-          }
-          else {
+          } else {
             body = Text("No more Data");
           }
           return Container(
@@ -140,220 +137,201 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
       controller: _refreshController,
       onRefresh: _onRefresh,
       onLoading: _onLoading,
-      child:
-      StreamBuilder(
-        stream: FireBaseStore().getChatInboxFireBase(
-            uId: currentUserId,
-            isAll: false).asStream(),
+      child: StreamBuilder(
+        stream: FireBaseStore()
+            .getChatInboxFireBase(uId: currentUserId, isAll: false)
+            .asStream(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors().loaderColor[300]),
-
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppColors().loaderColor[300]),
               ),
             );
-          }
-          else {
-            return snapshot.data.length>0? ListView.builder(
-              padding: EdgeInsets.fromLTRB(
-                appDimens.horizontalMarginPadding(value: 15),
-                appDimens.horizontalMarginPadding(value: 20),
-                appDimens.horizontalMarginPadding(value: 15),
-                appDimens.horizontalMarginPadding(value: 20),
-              ),
-              itemBuilder: (context, index) =>
-                  buildItemRow(context, snapshot.data[index]),
-              itemCount: snapshot.data.length,
-            ):Center(
-                child: Text("No Chat Found!")
-            );
+          } else {
+            return snapshot.data.length > 0
+                ? ListView.builder(
+                    padding: EdgeInsets.fromLTRB(
+                      appDimens.horizontalMarginPadding(value: 15),
+                      appDimens.horizontalMarginPadding(value: 20),
+                      appDimens.horizontalMarginPadding(value: 15),
+                      appDimens.horizontalMarginPadding(value: 20),
+                    ),
+                    itemBuilder: (context, index) =>
+                        buildItemRow(context, snapshot.data[index]),
+                    itemCount: snapshot.data.length,
+                  )
+                : Center(child: Text("No Chat Found!"));
           }
         },
       ),
-
     );
 
-    Widget menuOverFlow = Container(width: 50,child: Align(
-      alignment: Alignment.centerRight,
-      child: PoupMenuWidgets(
-        itemList: <Choice>[
-          Choice(title: 'Groups', icon: Icons.edit,id: 0),
-          Choice(title: 'Users', icon: Icons.edit,id: 1),
-          Choice(title: 'Log Out', icon: Icons.delete,id: 2),
-        ],
-        selectedCallBack: (value,choiceValue) async {
-          if (value != null) {
-            //Groups List
-            if (value == 0) {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          GroupsListScreen(
-                            isAllGroups: true,
-                            selectedUChatId: selfUserChatId,
-                          )));
-            }
-            //Users list
-            else if (value == 1) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        UsersListScreen()));
-            }
+    Widget menuOverFlow = Container(
+      width: 50,
+      child: Align(
+        alignment: Alignment.centerRight,
+        child: PoupMenuWidgets(
+          itemList: <Choice>[
+            Choice(title: 'Groups', icon: Icons.edit, id: 0),
+            Choice(title: 'Users', icon: Icons.edit, id: 1),
+            Choice(title: 'Log Out', icon: Icons.delete, id: 2),
+          ],
+          selectedCallBack: (value, choiceValue) async {
+            if (value != null) {
+              //Groups List
+              if (value == 0) {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => GroupsListScreen(
+                              isAllGroups: true,
+                              selectedUChatId: selfUserChatId,
+                            )));
+              }
+              //Users list
+              else if (value == 1) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => UsersListScreen()));
+              }
 
-            //Logout
-            else if (value == 2) {
-              await sharedPreferencesFile.saveStr("chatUid", "");  // Re-save Chat uid on logout
-              Navigator.pop(context);  //Finish Base screen
-              //Redirect to login screen
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          LoginWithEmailScreen()));
-               }
-          }
-        },
-      ),),);
+              //Logout
+              else if (value == 2) {
+                await sharedPreferencesFile.saveStr(
+                    "chatUid", ""); // Re-save Chat uid on logout
+                Navigator.pop(context); //Finish Base screen
+                //Redirect to login screen
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => LoginWithEmailScreen()));
+              }
+            }
+          },
+        ),
+      ),
+    );
     //App bar
-    Widget appBar =  appBarBackArrowWithTitleAndSubTitle.appBarWithLeftRightIconTitleSubtitle(
-        statusbarHeight:MediaQuery.of(context).padding.top,
-        title: "Inbox",
-        appBarBgColor: appColors.appBarBgColor,
-        titleColor:
-        appColors.appBarTextColor[600],
-        titleFontSize:
-        appDimens.fontSize(value: 20),
-        rightIcon: menuOverFlow,
-        rightIconSize:
-        appDimens.widthDynamic(value: 22),
-        leftIconSize:
-        appDimens.widthDynamic(value: 20),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        onRightIconPressed: () {
-
-        });
+    Widget appBar = appBarBackArrowWithTitleAndSubTitle
+        .appBarWithLeftRightIconTitleSubtitle(
+            statusbarHeight: MediaQuery.of(context).padding.top,
+            title: "Inbox",
+            appBarBgColor: appColors.appBarBgColor,
+            titleColor: appColors.appBarTextColor[600],
+            titleFontSize: appDimens.fontSize(value: 20),
+            rightIcon: menuOverFlow,
+            rightIconSize: appDimens.widthDynamic(value: 22),
+            leftIconSize: appDimens.widthDynamic(value: 20),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            onRightIconPressed: () {});
 
     Future<bool> onBackPress() async {
       if (Platform.isAndroid) {
         SystemNavigator.pop();
-      }
-      else if(Platform.isIOS) {
+      } else if (Platform.isIOS) {
         SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-      }
-      else{
+      } else {
         exit(0);
       }
       return Future.value(false);
     }
-    /*==================== Main view ======================*/
-    return
-      WillPopScope(
-        child:
-        Container(
-            color: appColors.appBgColor[200],
-            child:  SafeArea(
-                child:new Scaffold(
-                  appBar: appBar,
-                  body: Container(
-                      padding: EdgeInsets.only(
-                        left: appDimens.widthDynamic(value: 20),
-                        right: appDimens.widthDynamic(value: 20),
-                        //bottom: 0.2
-                      ),
-                      color: appColors.appBgColor[400],
-                      child: Stack(
-                        children: <Widget>[
-                          // List
-                          Container(
-                              margin: EdgeInsets.only(
-                                  top: appDimens.verticalMarginPadding(value: 0)),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: appColors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(8.0),
-                                    topRight: Radius.circular(8.0),
-                                  ),
-                                ),
-                                child: centerItemsViewPull1,
-                              )),
-                        ],
-                      )),
-                ))),
-        onWillPop: onBackPress,
-      );
 
+    /*==================== Main view ======================*/
+    return WillPopScope(
+      child: Container(
+          color: appColors.appBgColor[200],
+          child: SafeArea(
+              child: new Scaffold(
+            appBar: appBar,
+            body: Container(
+                padding: EdgeInsets.only(
+                  left: appDimens.widthDynamic(value: 20),
+                  right: appDimens.widthDynamic(value: 20),
+                  //bottom: 0.2
+                ),
+                color: appColors.appBgColor[400],
+                child: Stack(
+                  children: <Widget>[
+                    // List
+                    Container(
+                        margin: EdgeInsets.only(
+                            top: appDimens.verticalMarginPadding(value: 0)),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: appColors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0),
+                            ),
+                          ),
+                          child: centerItemsViewPull1,
+                        )),
+                  ],
+                )),
+          ))),
+      onWillPop: onBackPress,
+    );
   }
 
-  Widget buildItemRow(BuildContext context, document) {
-    if (document == null) {
+  Widget buildItemRow(BuildContext context, doc) {
+    if (doc == null) {
       return Container();
-    }
-    else {
+    } else {
       String time = "", alumniName = "", message = "", profileImage;
       bool isGroupChat = false;
       String gId;
       bool isGroupCreated = false;
       bool isNewMessage = false;
       String otherUid;
-     try {
-        time = document['timestamp'];
+      try {
+        time = doc['timestamp'];
         alumniName = "";
         profileImage = "";
-        isGroupChat = document['isGroup'];
-        otherUid = document['id'];
-        gId = document['id'];
+        isGroupChat = doc['isGroup'];
+        otherUid = doc['id'];
+        gId = doc['id'];
         time = time;
         if (time != null) {
           time = projectUtil.getTimeAgo(timestamp: int.parse(time));
         }
-      }
-      catch (e) {
+      } catch (e) {
         print(e);
       }
-      return
-
-      FutureBuilder(
-        future: !isGroupChat?Firestore.instance
-            .collection('users')
-            .where('id', isEqualTo: gId)
-            .getDocuments():
-            Firestore.instance
-            .collection('user_groups')
-            .where('gId', isEqualTo: gId)
-            .getDocuments(),
-        builder: (BuildContext context,
-            AsyncSnapshot<dynamic> snapshot) {
+      return FutureBuilder(
+        future: !isGroupChat
+            ? FirebaseFirestore.instance
+                .collection('users')
+                .where('id', isEqualTo: gId)
+                .get()
+            : FirebaseFirestore.instance
+                .collection('user_groups')
+                .where('gId', isEqualTo: gId)
+                .get(),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
             var value = snapshot.data;
-            final List<DocumentSnapshot> documents =
-                value.documents;
-            if (documents.length != 0) {
+            final List<DocumentSnapshot> docs = value.docs;
+            if (docs.length != 0) {
               //One to One chat
-              if(!isGroupChat){
-                profileImage = documents[0].data['imageUrl'];
-                alumniName = documents[0].data['nickName'];
-                message = document['last_message'];
-                isNewMessage = !document['isReded'];
+              if (!isGroupChat) {
+                profileImage = docs[0]['imageUrl'];
+                alumniName = docs[0]['nickName'];
+                message = doc['last_message'];
+                isNewMessage = !doc['isReded'];
               }
               //Group chat details
-              else{
+              else {
                 isGroupCreated =
-                documents[0].data['createBy'] == selfUserChatId ? true : false;
-                profileImage = documents[0].data['image'];
-                alumniName = documents[0].data['name'];
-                message = document['last_message'];
-                isNewMessage = !document['isReded'];
+                    docs[0]['createBy'] == selfUserChatId ? true : false;
+                profileImage = docs[0]['image'];
+                alumniName = docs[0]['name'];
+                message = doc['last_message'];
+                isNewMessage = !doc['isReded'];
               }
-              return
-               Container(
+              return Container(
                 child: FlatButton(
                   child: Row(
                     children: <Widget>[
@@ -378,28 +356,29 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
                                   alumniName ?? "",
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                    fontFamily:
-                                    appFonts.defaultFont,
+                                    fontFamily: appFonts.defaultFont,
                                     fontSize: appDimens.fontSize(value: 18),
                                     color: appColors.textHeadingColor[100],
                                   ),
                                   maxLines: 1,
                                 ),
                                 alignment: Alignment.centerLeft,
-                                margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                                margin:
+                                    EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
                               ),
                               Container(
                                 child: Text('$message',
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         fontFamily: appFonts.defaultFont,
-                                        fontSize: appDimens
-                                            .fontSize(value: 12),
+                                        fontSize: appDimens.fontSize(value: 12),
                                         fontWeight: FontWeight.w400,
-                                        color: AppColors().textNormalColor[300]),
+                                        color:
+                                            AppColors().textNormalColor[300]),
                                     maxLines: 1),
                                 alignment: Alignment.centerLeft,
-                                margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                                margin:
+                                    EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
                               )
                             ],
                           ),
@@ -412,11 +391,16 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
                               child: Container(
                                 //color: Colors.red,
                                 //width: 70,
-                                child:
-                                Row(
+                                child: Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: <Widget>[
-                                   isNewMessage?Icon(Icons.fiber_manual_record, color: appColors.primaryColor[500],size: 12,):Container(),
+                                    isNewMessage
+                                        ? Icon(
+                                            Icons.fiber_manual_record,
+                                            color: appColors.primaryColor[500],
+                                            size: 12,
+                                          )
+                                        : Container(),
                                     Container(
                                       width: 65,
                                       child: Padding(
@@ -427,11 +411,13 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
                                               time != null ? "$time" : "",
                                               //"12:30 dhjgh hd hu u h",
                                               style: TextStyle(
-                                                fontFamily: appFonts.defaultFont,
+                                                fontFamily:
+                                                    appFonts.defaultFont,
                                                 fontWeight: FontWeight.w400,
-                                                fontSize: appDimens
-                                                    .fontSize(value: 12),
-                                                color: AppColors().textNormalColor[300],
+                                                fontSize: appDimens.fontSize(
+                                                    value: 12),
+                                                color: AppColors()
+                                                    .textNormalColor[300],
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -446,22 +432,23 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
                   onPressed: () {
                     if (isGroupChat && gId != null) {
                       Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => GroupChatScreen(
-                                  groupInfo: {
-                                    "timestamp": document['timestamp'],
-                                    "image": document['imageUrl'],
-                                    "description": document['description'],
-                                    "gId": document['gId']
-                                  },
-                                  peerId: gId,
-                                  name: alumniName != null ? alumniName : "",
-                                  peerAvatar: profileImage,
-                                  isGroupChat: true,
-                                  isGroupCreated: isGroupCreated))).then((value) {
-                                          });
-
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => GroupChatScreen(
+                                          groupInfo: {
+                                            "timestamp": doc['timestamp'],
+                                            "image": doc['imageUrl'],
+                                            "description": doc['description'],
+                                            "gId": doc['gId']
+                                          },
+                                          peerId: gId,
+                                          name: alumniName != null
+                                              ? alumniName
+                                              : "",
+                                          peerAvatar: profileImage,
+                                          isGroupChat: true,
+                                          isGroupCreated: isGroupCreated)))
+                          .then((value) {});
                     }
                     //One to One Chat
                     else {
@@ -469,15 +456,13 @@ class _InboxScreen extends State<InboxScreen> with WidgetsBindingObserver {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>
-                                    OneToOneChatScreen(
+                                builder: (context) => OneToOneChatScreen(
                                       peerId: otherUid,
-                                      name: alumniName != null ? alumniName : "",
+                                      name:
+                                          alumniName != null ? alumniName : "",
                                       peerAvatar: profileImage,
                                       isGroupChat: false,
-                                    ))).then((value) {
-
-                        });
+                                    ))).then((value) {});
                       }
                     }
                   },

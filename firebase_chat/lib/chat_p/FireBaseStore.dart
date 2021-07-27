@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_chat/chat_p/api_request.dart';
 import 'package:firebase_chat/chat_p/shared_preferences_file.dart';
 import 'package:firebase_chat/screens/inbox_p/models/group.dart';
-import 'package:firebase_chat/screens/inbox_p/models/user.dart';
+import 'package:firebase_chat/screens/inbox_p/models/user_profile_details.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,27 +15,42 @@ import 'api_constant.dart';
 
 // In case we decide to implement another kind of authorization method
 abstract class FireBaseStoreBase {
-
   // Sent new message
-  Future<dynamic> sentMessageFireBase({Key key,String uId, String peerId, String groupChatId,
-      String name, String content, int type, bool isFromGroup});
+  Future<dynamic> sentMessageFireBase(
+      {Key key,
+      String uId,
+      String peerId,
+      String groupChatId,
+      String name,
+      String content,
+      int type,
+      bool isFromGroup});
   //Sent notification
-  Future<dynamic> sentFCMNotificationFireBase({Key key,receiverId,String senderName,String uId
-    ,String content,bool isFromGroup,bool isFirstTime,String notificationSentApi});
+  Future<dynamic> sentFCMNotificationFireBase(
+      {Key key,
+      receiverId,
+      String senderName,
+      String uId,
+      String content,
+      bool isFromGroup,
+      bool isFirstTime,
+      String notificationSentApi});
   //Upload file on fire-base
-  Future<dynamic> uploadFileFireBase({Key key,File imageFile});
+  Future<dynamic> uploadFileFireBase({Key key, File imageFile});
   //Update notification token of user
   Future<dynamic> updateFireBaseToken({Key key, String uId, String token});
 
   //******************* User details  ******************************************
   //Add new user on fire-base
-  Future<dynamic> addNewUserOnFireBase({Key key, String uId, String nickName, String imageUrl});
+  Future<dynamic> addNewUserOnFireBase(
+      {Key key, String uId, String nickName, String imageUrl});
   //Get single fire-base user details
   Future<dynamic> getUsersListFireBase();
   //Get single fire-base user details
-  Future<dynamic> getUserDetailsFireBase({Key key,String uId});
+  Future<dynamic> getUserDetailsFireBase({Key key, String uId});
   //Update fire-base user details
-  Future<dynamic> updatedUserProfileFireBase({Key key, String uId, String nickName, String imageUrl});
+  Future<dynamic> updatedUserProfileFireBase(
+      {Key key, String uId, String nickName, String imageUrl});
   //******************* User Details ******************************************
 
   //******************* Group ******************************************
@@ -44,33 +59,34 @@ abstract class FireBaseStoreBase {
   //Get fire-base group list privet, public and all
   Future<dynamic> getGroupsFireBase({Key key, String uId, bool isAll});
   //Get group details/info
-  Future<dynamic> getGroupDetailsFireBase({Key key,String uId});
+  Future<dynamic> getGroupDetailsFireBase({Key key, String uId});
   //Create group on fire-base
-  Future<dynamic> createChatGroupFireBase({Key key, chatGroup, user,usersList,String notificationSentApi});
-  Future<dynamic> inviteUserInGroupFireBase({Key key, chatGroup,usersList,String notificationSentApi});
+  Future<dynamic> createChatGroupFireBase(
+      {Key key, chatGroup, user, usersList, String notificationSentApi});
+  Future<dynamic> inviteUserInGroupFireBase(
+      {Key key, chatGroup, usersList, String notificationSentApi});
   //Update group details/info
-  Future<dynamic> updatedChatGroupFireBase({Key key,chatGroup, user});
+  Future<dynamic> updatedChatGroupFireBase({Key key, chatGroup, UsersDetails user});
 
   //Join any group
-  Future<dynamic> joinChatGroupFireBase({Key key, groupId, user});
+  Future<dynamic> joinChatGroupFireBase({Key key, groupId, UsersDetails user});
   //Left group
   Future<dynamic> leftChatGroupFireBase({Key key, String groupId, user});
   //Delete group
-  Future<dynamic> deleteChatGroupFireBase({Key key,String groupId});
- //******************* End Group ******************************************
-
+  Future<dynamic> deleteChatGroupFireBase({Key key, String groupId});
+  //******************* End Group ******************************************
 
   //******************* User Inbox ******************************************
   //Get inbox data list from fire-base
-  Future<dynamic> getChatInboxFireBase({Key key, String uId,bool isAll});
+  Future<dynamic> getChatInboxFireBase({Key key, String uId, bool isAll});
   //inbox message update
-  Future<dynamic> inboxUpdateMessageReadStatusFireBase({Key key,String uId,bool isGroup});
+  Future<dynamic> inboxUpdateMessageReadStatusFireBase(
+      {Key key, String uId, bool isGroup});
 
-
-  Future<dynamic> setBaseUrl({Key key,String url});
-  Future<dynamic> setNotificationUrl({Key key,String url});
+  Future<dynamic> setBaseUrl({Key key, String url});
+  Future<dynamic> setNotificationUrl({Key key, String url});
   //This below functions are using internally
- /* Future<dynamic> inboxNewEntryFireBase({Key key,String selfUid,String uId,ChatGroups chatGroup,
+  /* Future<dynamic> inboxNewEntryFireBase({Key key,String selfUid,String uId,ChatGroups chatGroup,
       User user,@required bool isFromGroup});*/
   /*Future<dynamic> inboxUpdateGroupJoinStatusFireBase({Key key,String selfUid,
       String uId,ChatGroups chatGroup,User user,bool isFromGroup});*/
@@ -80,10 +96,11 @@ abstract class FireBaseStoreBase {
 
 class FireBaseStore implements FireBaseStoreBase {
   FirebaseAuth fireBaseAuth = FirebaseAuth.instance;
-  Firestore fireBaseStore = Firestore.instance;
+  FirebaseFirestore fireBaseStore = FirebaseFirestore.instance;
 
   //Get inbox from fire-base
-  Future<dynamic> getChatInboxFireBase({Key key,String uId,bool isAll}) async {
+  Future<dynamic> getChatInboxFireBase(
+      {Key key, String uId, bool isAll}) async {
     try {
       //If want all list
       if (isAll) {
@@ -91,12 +108,14 @@ class FireBaseStore implements FireBaseStoreBase {
       }
       if (uId != null) {
         //Get List of group or messages main node
-        final QuerySnapshot result = await Firestore.instance
-            .collection('users_inbox').document(uId)
+        final QuerySnapshot result = await FirebaseFirestore.instance
+            .collection('users_inbox')
+            .doc(uId)
             .collection('inbox_user')
             .orderBy('timestamp', descending: true)
-            .getDocuments();
-        final List<DocumentSnapshot> listOfInbox = result.documents;
+            .get();
+        //.getDocuments();
+        final List<DocumentSnapshot> listOfInbox = result.docs;
         //Get selected user data from list
         if (listOfInbox != null && listOfInbox.length > 0) {
           return listOfInbox;
@@ -113,25 +132,23 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Inbox update at new message and reade status
-  Future<dynamic> inboxUpdateMessageReadStatusFireBase({Key key,String uId,bool isGroup}) async{
-    if(isGroup==null){
+  Future<dynamic> inboxUpdateMessageReadStatusFireBase(
+      {Key key, String uId, bool isGroup}) async {
+    if (isGroup == null) {
       isGroup = false;
     }
     try {
-      sharedPreferencesFile.readStr('chatUid').then((selfUid){
-        if(selfUid!=null && uId!=null){
+      sharedPreferencesFile.readStr('chatUid').then((selfUid) {
+        if (selfUid != null && uId != null) {
           try {
             //Update in self
-            Firestore.instance
+            FirebaseFirestore.instance
                 .collection('users_inbox')
-                .document(selfUid)
+                .doc(selfUid)
                 .collection('inbox_user')
-                .document(uId)
-                .updateData(
-                {
-                  'isReded':true
-                }
-            );
+                .doc(uId)
+                .update({'isReded': true});
+            //.updateData({'isReded': true});
           } catch (e) {
             print(e);
           }
@@ -146,17 +163,24 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Send Message group
-  Future<dynamic> sentMessageFireBase({Key key,String uId, String peerId, String groupChatId,
-    String name, String content, int type, bool isFromGroup}) async {
+  Future<dynamic> sentMessageFireBase(
+      {Key key,
+      String uId,
+      String peerId,
+      String groupChatId,
+      String name,
+      String content,
+      int type,
+      bool isFromGroup}) async {
     //Check group id is created or not
-    var documentReference = Firestore.instance
+    var documentReference = FirebaseFirestore.instance
         .collection('messages')
-        .document(groupChatId)
+        .doc(groupChatId)
         .collection(groupChatId)
-    // .document(timeStamp.toString());
-        .document(DateTime.now().millisecondsSinceEpoch.toString());
+        // .doc(timeStamp.toString());
+        .doc(DateTime.now().millisecondsSinceEpoch.toString());
 
-    await Firestore.instance.runTransaction((transaction) async {
+    await FirebaseFirestore.instance.runTransaction((transaction) async {
       await transaction.set(
         documentReference,
         {
@@ -171,17 +195,18 @@ class FireBaseStore implements FireBaseStoreBase {
       );
     });
 
-    final QuerySnapshot result = await Firestore.instance
+    final QuerySnapshot result = await FirebaseFirestore.instance
         .collection('messages')
         .where('id', isEqualTo: groupChatId)
-        .getDocuments();
-    final List<DocumentSnapshot> documents = result.documents;
-    if (documents.length == 0) {
+        .get();
+    // .getDocuments();
+    final List<DocumentSnapshot> docs = result.docs;
+    if (docs.length == 0) {
       try {
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection('messages')
-            .document(groupChatId)
-            .setData({
+            .doc(groupChatId)
+            .set({
           'id': groupChatId,
           'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
           'isGroup': isFromGroup
@@ -199,52 +224,53 @@ class FireBaseStore implements FireBaseStoreBase {
 
   //Delete group
   //Delete group
-  Future<dynamic> deleteChatGroupFireBase({Key key,String groupId}) async {
+  Future<dynamic> deleteChatGroupFireBase({Key key, String groupId}) async {
     //Check group id is created or not
     try {
       if (groupId != null) {
-        try{
+        try {
           //Delete group from user inbox
-          final QuerySnapshot groupDetails = await Firestore.instance
+          final QuerySnapshot groupDetails = await FirebaseFirestore.instance
               .collection('user_groups')
               .where('gId', isEqualTo: groupId)
-              .getDocuments();
-          if(groupDetails!=null && groupDetails.documents!=null ){
-            final List<DocumentSnapshot> documentsUser = groupDetails.documents;
-            if(documentsUser!=null && documentsUser.length>0){
+              .get();
+          // .getDocuments();
+          if (groupDetails != null && groupDetails.docs != null) {
+            final List<DocumentSnapshot> documentsUser = groupDetails.docs;
+            if (documentsUser != null && documentsUser.length > 0) {
               DocumentSnapshot detailsTemp = documentsUser[0];
               List<dynamic> groupUsersList = detailsTemp["usersDetails"];
-              if(groupUsersList!=null && groupUsersList.length>0){
-                for(int i=0;i<groupUsersList.length;i++){
+              if (groupUsersList != null && groupUsersList.length > 0) {
+                for (int i = 0; i < groupUsersList.length; i++) {
                   var singleUserDetails = groupUsersList[i];
-                  if(singleUserDetails!=null){
+                  if (singleUserDetails != null) {
                     try {
                       String userId = singleUserDetails["id"];
-                      if(userId!=null){
+                      if (userId != null) {
                         var chatId = groupId;
-                        await inboxUpdateGroupDeleteStatusFireBase(selfUid: userId, chatId: chatId,deleteStatus: true);
+                        await inboxUpdateGroupDeleteStatusFireBase(
+                            selfUid: userId,
+                            chatId: chatId,
+                            deleteStatus: true);
                       }
-                    }
-                    catch (e) {
+                    } catch (e) {
                       print(e);
                     }
                   }
                 }
               }
             }
-
           }
           print("Ok");
-        }
-        catch (e) {
+        } catch (e) {
           // TODO
           print("firebase error $e");
         }
         try {
-          await Firestore.instance
+          await FirebaseFirestore.instance
               .collection("user_groups")
-              .document(groupId)
-              .updateData({"isDeletes": true});
+              .doc(groupId)
+              .update({"isDeletes": true});
           Fluttertoast.showToast(msg: 'Deleted successfully');
           return true;
         } on Exception catch (e) {
@@ -261,16 +287,15 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
   //Upload image on fire-base
-  Future<dynamic> uploadFileFireBase({Key key,File imageFile}) async {
+  Future<dynamic> uploadFileFireBase({Key key, File imageFile}) async {
     String imageUrl;
     try {
       String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-      StorageReference reference =
-      FirebaseStorage.instance.ref().child(fileName);
-      StorageUploadTask uploadTask = reference.putFile(imageFile);
-      StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+      Reference reference = FirebaseStorage.instance.ref().child(fileName);
+      UploadTask uploadTask = reference.putFile(imageFile);
+      TaskSnapshot storageTaskSnapshot =
+          await uploadTask.whenComplete(() => null);
       String downloadUrl = await storageTaskSnapshot.ref
           .getDownloadURL(); //.then((downloadUrl) {
       imageUrl = downloadUrl;
@@ -289,7 +314,7 @@ class FireBaseStore implements FireBaseStoreBase {
       StorageReference reference =
       FirebaseStorage.instance.ref().child(fileName);
       StorageUploadTask uploadTask = reference.putFile(imageFile);
-      StorageTaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
+      TaskSnapshot storageTaskSnapshot = await uploadTask.onComplete;
       String downloadUrl = await storageTaskSnapshot.ref
           .getDownloadURL(); //.then((downloadUrl) {
       imageUrl = downloadUrl;
@@ -306,14 +331,15 @@ class FireBaseStore implements FireBaseStoreBase {
     try {
       if (uId != null && nickName != null) {
         // Check is already sign up
-        final QuerySnapshot result = await Firestore.instance
+        final QuerySnapshot result = await FirebaseFirestore.instance
             .collection('users')
             .where('id', isEqualTo: uId)
-            .getDocuments();
-        final List<DocumentSnapshot> documents = result.documents;
-        if (documents.length == 0) {
+            .get();
+        // .getDocuments();
+        final List<DocumentSnapshot> docs = result.docs;
+        if (docs.length == 0) {
           //Update data to server if new user
-          Firestore.instance.collection('users').document(uId).setData({
+          FirebaseFirestore.instance.collection('users').doc(uId).set({
             'nickName': nickName,
             'imageUrl': imageUrl,
             'id': uId,
@@ -332,13 +358,14 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-  Future<dynamic> updateFireBaseToken({Key key, String uId, String token}) async {
+  Future<dynamic> updateFireBaseToken(
+      {Key key, String uId, String token}) async {
     try {
       if (uId != null) {
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection('users')
-            .document(uId)
-            .updateData({'pushToken': token});
+            .doc(uId)
+            .update({'pushToken': token});
         return true;
       } else {
         return false;
@@ -362,10 +389,10 @@ class FireBaseStore implements FireBaseStoreBase {
         if (imageUrl != null && imageUrl.trim().length > 0) {
           data['imageUrl'] = imageUrl;
         }
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection("users")
-            .document(mid)
-            .updateData(data);
+            .doc(mid)
+            .update(data);
         return true;
       } else {
         return false;
@@ -378,25 +405,25 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Create group on fire-base
-  createChatGroupFireBase({Key key, chatGroup, user,usersList,String notificationSentApi}) async {
-
+  createChatGroupFireBase(
+      {Key key, chatGroup, user, usersList, String notificationSentApi}) async {
     List<dynamic> userListTemp = new List();
     // Private group
-    if(chatGroup.groupType==1){
-    for(int i=0;i<usersList.length;i++){
-    var uId =   usersList[i];
-    var obj = {
-    "name": "",
-    "id": uId,
-    "imageUrl": "",
-    "pushToken": "",
-    "isRequestNotAccepted": (user.documentID==uId)?false:true,
-    };
-    userListTemp.add(obj);
+    if (chatGroup.groupType == 1) {
+      for (int i = 0; i < usersList.length; i++) {
+        var uId = usersList[i];
+        var obj = {
+          "name": "",
+          "id": uId,
+          "imageUrl": "",
+          "pushToken": "",
+          "isRequestNotAccepted": (user.documentID == uId) ? false : true,
+        };
+        userListTemp.add(obj);
       }
     }
     //Public group
-    else  if(chatGroup.groupType==0){
+    else if (chatGroup.groupType == 0) {
       var obj = {
         "name": user.firstName != null ? user.firstName : "",
         "id": user.documentID,
@@ -408,7 +435,7 @@ class FireBaseStore implements FireBaseStoreBase {
     }
 
     var documentReference =
-        await Firestore.instance.collection('user_groups').add({
+        await FirebaseFirestore.instance.collection('user_groups').add({
       'createBy': chatGroup.createBy,
       'name': chatGroup.name,
       'subHeading': chatGroup.subHeading,
@@ -423,97 +450,101 @@ class FireBaseStore implements FireBaseStoreBase {
     });
 
     //Check group id is created or not
-    if (documentReference != null && documentReference.documentID != null) {
+    if (documentReference != null && documentReference.id != null) {
       try {
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection('user_groups')
-            .document(documentReference.documentID)
-            .updateData({
-          'gId': documentReference.documentID,
+            .doc(documentReference.id)
+            .update({
+          'gId': documentReference.get(),
         });
 
-        try{
-
-          try{
-            if(chatGroup.groupType==1) {
+        try {
+          try {
+            if (chatGroup.groupType == 1) {
               for (int i = 0; i < usersList.length; i++) {
                 await inboxNewEntryFireBase(
                     selfUid: usersList[i],
-                    uId: documentReference.documentID,
+                    uId: documentReference.id,
                     chatGroup: chatGroup,
                     isFromGroup: true);
               }
 
               try {
-                String currentLoggedInChatId = await sharedPreferencesFile.readStr("chatUid");
+                String currentLoggedInChatId =
+                    await sharedPreferencesFile.readStr("chatUid");
                 var usersListTemp = usersList;
-                if(usersListTemp!=null && usersListTemp.length>0 && currentLoggedInChatId!=null && usersListTemp.contains(currentLoggedInChatId)){
+                if (usersListTemp != null &&
+                    usersListTemp.length > 0 &&
+                    currentLoggedInChatId != null &&
+                    usersListTemp.contains(currentLoggedInChatId)) {
                   usersListTemp.remove(currentLoggedInChatId);
                 }
                 //Sent notification
-                await sentFCMNotificationFireBaseByApi(receiverId : usersListTemp,senderName: chatGroup.name,content: "",isFromGroup: false,isFirstTime: true, uId: currentLoggedInChatId,isForGroupInvite: true,notificationSentApi:notificationSentApi);
+                await sentFCMNotificationFireBaseByApi(
+                    receiverId: usersListTemp,
+                    senderName: chatGroup.name,
+                    content: "",
+                    isFromGroup: false,
+                    isFirstTime: true,
+                    uId: currentLoggedInChatId,
+                    isForGroupInvite: true,
+                    notificationSentApi: notificationSentApi);
               } catch (e) {
                 print(e);
               }
-
-            }
-           else{
+            } else {
               //Add group in in box
               await inboxNewEntryFireBase(
                   selfUid: user.documentID,
-                  uId: documentReference.documentID,
+                  uId: documentReference.id,
                   chatGroup: chatGroup,
                   isFromGroup: true);
             }
-          }
-          catch (e) {
+          } catch (e) {
             print(e);
           }
-
-
-      }
-      catch (e) {
-        // TODO
-        print("firebase error $e");
-      }
-        return ChatGroups(gId: documentReference.documentID);
+        } catch (e) {
+          // TODO
+          print("firebase error $e");
+        }
+        return ChatGroups(gId: documentReference.id);
       } on Exception catch (e) {
         // TODO
         print("firebase error $e");
         return null;
       }
-    }
-    else {
+    } else {
       return ChatGroups(gId: null);
     }
   }
 
   //Invite user in group on fire-base
-  inviteUserInGroupFireBase({Key key, chatGroup,usersList,String notificationSentApi}) async {
+  inviteUserInGroupFireBase(
+      {Key key, chatGroup, usersList, String notificationSentApi}) async {
     List<dynamic> userListTemp = new List();
     // Private group
-    if(chatGroup.groupType==1){
-    for(int i=0;i<usersList.length;i++){
-    var uId =   usersList[i];
-    var obj = {
-    "name": "",
-    "id": uId,
-    "imageUrl": "",
-    "pushToken": "",
-    "isRequestNotAccepted": true,
-    };
-    userListTemp.add(obj);
+    if (chatGroup.groupType == 1) {
+      for (int i = 0; i < usersList.length; i++) {
+        var uId = usersList[i];
+        var obj = {
+          "name": "",
+          "id": uId,
+          "imageUrl": "",
+          "pushToken": "",
+          "isRequestNotAccepted": true,
+        };
+        userListTemp.add(obj);
       }
     }
     try {
-      await Firestore.instance
+      await FirebaseFirestore.instance
           .collection("user_groups")
-          .document(chatGroup.gId)
-          .updateData({"usersDetails": FieldValue.arrayUnion(userListTemp)});
+          .doc(chatGroup.gId)
+          .update({"usersDetails": FieldValue.arrayUnion(userListTemp)});
 
-      try{
-        if(chatGroup.groupType==1) {
-
+      try {
+        if (chatGroup.groupType == 1) {
           for (int i = 0; i < usersList.length; i++) {
             await inboxNewEntryFireBase(
                 selfUid: usersList[i],
@@ -523,21 +554,26 @@ class FireBaseStore implements FireBaseStoreBase {
           }
 
           try {
-            String currentLoggedInChatId = await sharedPreferencesFile.readStr("chatUid");
+            String currentLoggedInChatId =
+                await sharedPreferencesFile.readStr("chatUid");
             //Sent notification
-            await sentFCMNotificationFireBaseByApi(receiverId : usersList,senderName: chatGroup.name,content: "",isFromGroup: false,isFirstTime: true, uId: currentLoggedInChatId,isForGroupInvite: true,notificationSentApi: notificationSentApi);
-          }
-          catch (e) {
+            await sentFCMNotificationFireBaseByApi(
+                receiverId: usersList,
+                senderName: chatGroup.name,
+                content: "",
+                isFromGroup: false,
+                isFirstTime: true,
+                uId: currentLoggedInChatId,
+                isForGroupInvite: true,
+                notificationSentApi: notificationSentApi);
+          } catch (e) {
             print(e);
           }
-
         }
-      }
-      catch (e) {
+      } catch (e) {
         print(e);
       }
-    }
-    catch (e) {
+    } catch (e) {
       print(e);
     }
     print("firebase error $userListTemp");
@@ -552,35 +588,37 @@ class FireBaseStore implements FireBaseStoreBase {
       }
       if (uId != null || isAll) {
         String createById = uId;
-        CollectionReference ref = Firestore.instance.collection('user_groups');
-        final QuerySnapshot result = await ref.where('isDeletes',isEqualTo: false).getDocuments();
-        List<DocumentSnapshot> documents = result.documents;
-        if (documents.length != 0) {
-        documents.sort((a, b) => a['timestamp'].compareTo(b['timestamp']));  //Sort list according time (Arrange list according time)
-        documents =  documents.reversed.toList();   // revers list according time new created will come on top
+        CollectionReference ref =
+            FirebaseFirestore.instance.collection('user_groups');
+        final QuerySnapshot result =
+            await ref.where('isDeletes', isEqualTo: false).get();
+        //.getDocuments();
+        List<DocumentSnapshot> docs = result.docs;
+        if (docs.length != 0) {
+          docs.sort((a, b) => a['timestamp'].compareTo(b[
+              'timestamp'])); //Sort list according time (Arrange list according time)
+          docs = docs.reversed
+              .toList(); // revers list according time new created will come on top
           List<DocumentSnapshot> documentsTemp = new List();
           if (!isAll && createById != null) {
-            for (var document in documents) {
+            for (var doc in docs) {
               String groupMemberList;
-              if (document['usersDetails'] != null) {
-                groupMemberList = document['usersDetails'].toString();
+              if (doc['usersDetails'] != null) {
+                groupMemberList = doc['usersDetails'].toString();
               }
-              if (document['createBy'] == createById ||
+              if (doc['createBy'] == createById ||
                   (groupMemberList != null &&
                       groupMemberList.contains(createById))) {
-                documentsTemp
-                    .add(document); //return selected group details list
+                documentsTemp.add(doc); //return selected group details list
               }
             }
             if (documentsTemp.length <= 0) {
               return null;
-            }
-            else {
+            } else {
               return documentsTemp; //return selected group details list
             }
-          }
-          else {
-            documentsTemp.addAll(documents);
+          } else {
+            documentsTemp.addAll(docs);
             if (documentsTemp.length <= 0) {
               return null;
             } else {
@@ -598,19 +636,18 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
   //Get fire-base users list from fire-base
   Future<dynamic> getUsersListFireBase() async {
     try {
-        final QuerySnapshot result = await Firestore.instance
-            .collection('users')
-            .getDocuments();
-        final List<DocumentSnapshot> documentsUser = result.documents;
-        if (documentsUser.length > 0) {
-          return documentsUser;
-        } else {
-          return null;
-        }
+      final QuerySnapshot result =
+          await FirebaseFirestore.instance.collection('users').get();
+      //.getDocuments();
+      final List<DocumentSnapshot> documentsUser = result.docs;
+      if (documentsUser.length > 0) {
+        return documentsUser;
+      } else {
+        return null;
+      }
     } catch (e) {
       print(e);
       return null;
@@ -622,11 +659,12 @@ class FireBaseStore implements FireBaseStoreBase {
       {Key key, @required String uId}) async {
     try {
       if (uId != null) {
-        final QuerySnapshot result = await Firestore.instance
+        final QuerySnapshot result = await FirebaseFirestore.instance
             .collection('users')
             .where('id', isEqualTo: uId)
-            .getDocuments();
-        final List<DocumentSnapshot> documentsUser = result.documents;
+            .get();
+        // .getDocuments();
+        final List<DocumentSnapshot> documentsUser = result.docs;
         if (documentsUser.length > 0) {
           DocumentSnapshot mDocumentSnapshotUser = documentsUser[0];
           if (mDocumentSnapshotUser != null) {
@@ -651,11 +689,12 @@ class FireBaseStore implements FireBaseStoreBase {
       {Key key, @required String uId}) async {
     try {
       if (uId != null) {
-        final QuerySnapshot result = await Firestore.instance
+        final QuerySnapshot result = await FirebaseFirestore.instance
             .collection('user_groups')
             .where('gId', isEqualTo: uId)
-            .getDocuments();
-        final List<DocumentSnapshot> documentsUser = result.documents;
+            .get();
+        // .getDocuments();
+        final List<DocumentSnapshot> documentsUser = result.docs;
         if (documentsUser.length > 0) {
           DocumentSnapshot mDocumentSnapshotUser = documentsUser[0];
           if (mDocumentSnapshotUser != null) {
@@ -675,29 +714,29 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
   //Get group count on fire-base
   Future<dynamic> getGroupCountFireBase({Key key, String uId}) async {
     try {
       if (uId != null) {
         String createById = uId;
-        final QuerySnapshot result = await Firestore.instance
+        final QuerySnapshot result = await FirebaseFirestore.instance
             .collection('user_groups')
             .where('isDeletes', isEqualTo: false)
-            .getDocuments();
-        final List<DocumentSnapshot> documents = result.documents;
-        if (documents.length != 0) {
+            .get();
+        // .getDocuments();
+        final List<DocumentSnapshot> docs = result.docs;
+        if (docs.length != 0) {
           List<DocumentSnapshot> documentsTemp = new List();
-          for (var document in documents) {
-            if (document != null) {
+          for (var doc in docs) {
+            if (doc != null) {
               String groupMemberList;
-              if (document['usersDetails'] != null && !document['isDeletes']) {
-                groupMemberList = document['usersDetails'].toString();
+              if (doc['usersDetails'] != null && !doc['isDeletes']) {
+                groupMemberList = doc['usersDetails'].toString();
               }
-              if (document['createBy'] == createById ||
+              if (doc['createBy'] == createById ||
                   (groupMemberList != null &&
                       groupMemberList.contains(createById))) {
-                documentsTemp.add(document);
+                documentsTemp.add(doc);
               }
             }
           }
@@ -713,15 +752,15 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Edit/Updated group details on fire-base
-  Future<dynamic> updatedChatGroupFireBase({Key key,  chatGroup, user}) async {
+  Future<dynamic> updatedChatGroupFireBase({Key key, chatGroup, UsersDetails user}) async {
     //Check group id is created or not
     try {
       if (chatGroup != null && chatGroup.gId != null) {
         String groupId = chatGroup.gId;
-        await Firestore.instance
+        await FirebaseFirestore.instance
             .collection("user_groups")
-            .document(groupId)
-            .updateData({
+            .doc(groupId)
+            .update({
           'name': chatGroup.name,
           'subHeading': chatGroup.subHeading,
           'description': chatGroup.description,
@@ -741,15 +780,13 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
-
   //inbox creation and entry
   Future<dynamic> inboxNewEntryFireBase(
       {Key key,
       String selfUid,
       String uId,
       chatGroup,
-      User user,
+      UserInfo user,
       @required bool isFromGroup}) async {
     if (isFromGroup == null) {
       isFromGroup = false;
@@ -757,17 +794,17 @@ class FireBaseStore implements FireBaseStoreBase {
     try {
       if (uId != null) {
         // Check is already sign up
-        /*var documentTemp =  await Firestore.instance
+        /*var documentTemp =  await FirebaseFirestore.instance
             .collection('users_inbox')
-            .document(selfUid)
+            .doc(selfUid)
             .collection('inbox_user').limit(1).getDocuments();*/
-            //.get();
+        //.get();
 
-        var documentTemp = await Firestore.instance
+        var documentTemp = await FirebaseFirestore.instance
             .collection('users_inbox')
-            .document(selfUid)
+            .doc(selfUid)
             .collection('inbox_user')
-            .document(uId)
+            .doc(uId)
             .get();
 
         String imageUrl = "";
@@ -779,50 +816,52 @@ class FireBaseStore implements FireBaseStoreBase {
           imageUrl = chatGroup.image != null ? chatGroup.image : "";
           groupType = chatGroup.groupType != null ? chatGroup.groupType : 0;
         } else if (user != null) {
-          name = user.firstName != null ? user.firstName : "";
-          imageUrl = user.imageUrl != null ? user.imageUrl : "";
+          // name = user.firstName != null ? user.firstName : "";
+          name = user.displayName != null ? user.displayName : "";
+          imageUrl = user.photoURL != null ? user.photoURL : "";
         }
         //Update if already exist
-        if (documentTemp != null)
-        {
-          if(documentTemp!=null &&  documentTemp.data == null) {
+        if (documentTemp != null) {
+          if (documentTemp != null && documentTemp.data() == null) {
             if (isFromGroup) {
               try {
-                String currentLoggedInChatId = await sharedPreferencesFile.readStr("chatUid");
+                String currentLoggedInChatId =
+                    await sharedPreferencesFile.readStr("chatUid");
 
-                await Firestore.instance
+                await FirebaseFirestore.instance
                     .collection('users_inbox')
-                    .document(selfUid)
+                    .doc(selfUid)
                     .collection('inbox_user')
-                    .document(uId)
-                    .setData({
+                    .doc(uId)
+                    .set({
                   "isGroup": isFromGroup,
                   "isDeletes": false,
-                  "isJoin": (groupType==1)?(currentLoggedInChatId!=null && currentLoggedInChatId==selfUid)?true:false:true,
+                  "isJoin": (groupType == 1)
+                      ? (currentLoggedInChatId != null &&
+                              currentLoggedInChatId == selfUid)
+                          ? true
+                          : false
+                      : true,
                   "isBlock": false,
                   'isReded': true,
                   'last_message': "Welcome in group",
                   'image': imageUrl,
                   "id": uId,
                   'name': name,
-                  'timestamp': DateTime
-                      .now()
-                      .millisecondsSinceEpoch
-                      .toString(),
+                  'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
                 });
               } catch (e) {
                 // TODO
                 print("firebase error $e");
               }
-            }
-            else if (!isFromGroup) {
+            } else if (!isFromGroup) {
               //Update data to server if new user
-              Firestore.instance
+              FirebaseFirestore.instance
                   .collection('users_inbox')
-                  .document(selfUid)
+                  .doc(selfUid)
                   .collection('inbox_user')
-                  .document(uId)
-                  .setData({
+                  .doc(uId)
+                  .set({
                 "isGroup": isFromGroup,
                 "isDeletes": false,
                 "isJoin": true,
@@ -832,16 +871,12 @@ class FireBaseStore implements FireBaseStoreBase {
                 'image': imageUrl,
                 "id": uId,
                 'name': name,
-                'timestamp': DateTime
-                    .now()
-                    .millisecondsSinceEpoch
-                    .toString(),
+                'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
               });
             }
           }
           return true;
-        }
-        else {
+        } else {
           return false;
         }
       } else {
@@ -852,95 +887,82 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
-
   //Inbox update at new message and reade status
-  Future<dynamic> inboxUpdateNewMessageStatusFireBase({
-    Key key,
-    String selfUid,
-    String chatId,
-    String message,
-    bool isGroup,
-    receiverId
-  }) async
-  {
-    if(isGroup==null){
+  Future<dynamic> inboxUpdateNewMessageStatusFireBase(
+      {Key key,
+      String selfUid,
+      String chatId,
+      String message,
+      bool isGroup,
+      receiverId}) async {
+    if (isGroup == null) {
       isGroup = false;
     }
     try {
       //Group chat
-      if(isGroup){
+      if (isGroup) {
         try {
           //Update in self
-          await Firestore.instance
+          await FirebaseFirestore.instance
               .collection('users_inbox')
-              .document(selfUid)
+              .doc(selfUid)
               .collection('inbox_user')
-              .document(chatId)
-              .updateData(
-              {
-                'isReded':true,
-                'timestamp':DateTime.now().millisecondsSinceEpoch.toString(),
-                'last_message':message
-              }
-          );
-        }
-        catch (e) {
+              .doc(chatId)
+              .update({
+            'isReded': true,
+            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'last_message': message
+          });
+        } catch (e) {
           print(e);
         }
-        try{
-          for(int i=0;i<receiverId.length;i++)
-          Firestore.instance
-              .collection('users_inbox')
-              .document(receiverId[i])
-              .collection('inbox_user')
-              .document(chatId)
-              .updateData(
-              {
-                'isReded':false,
-                'timestamp':DateTime.now().millisecondsSinceEpoch.toString(),
-                'last_message':message}
-          );
-        }
-        catch (e) {
+        try {
+          for (int i = 0; i < receiverId.length; i++)
+            FirebaseFirestore.instance
+                .collection('users_inbox')
+                .doc(receiverId[i])
+                .collection('inbox_user')
+                .doc(chatId)
+                .update({
+              'isReded': false,
+              'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+              'last_message': message
+            });
+        } catch (e) {
           print(e);
         }
       }
       //One to one chat
-      else{
-       try {
-         //Update in self
-         await Firestore.instance
-                     .collection('users_inbox')
-                     .document(selfUid)
-                     .collection('inbox_user')
-                     .document(receiverId[0])
-                     .updateData(
-                     {
-                       'isReded':true,
-                       'timestamp':DateTime.now().millisecondsSinceEpoch.toString(),
-                       'last_message':message
-                     }
-                 );
-       } catch (e) {
-         print(e);
-       }
-       try {
-         await Firestore.instance
-                     .collection('users_inbox')
-                     .document(receiverId[0])
-                     .collection('inbox_user')
-                     .document(selfUid)
-                     .updateData(
-                     {
-                       'isReded':false,
-                       'timestamp':DateTime.now().millisecondsSinceEpoch.toString(),
-                       'last_message':message
-                     }
-                 );
-       } catch (e) {
-         print(e);
-       }
+      else {
+        try {
+          //Update in self
+          await FirebaseFirestore.instance
+              .collection('users_inbox')
+              .doc(selfUid)
+              .collection('inbox_user')
+              .doc(receiverId[0])
+              .update({
+            'isReded': true,
+            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'last_message': message
+          });
+        } catch (e) {
+          print(e);
+        }
+        try {
+          await FirebaseFirestore.instance
+              .collection('users_inbox')
+              .doc(receiverId[0])
+              .collection('inbox_user')
+              .doc(selfUid)
+              .update({
+            'isReded': false,
+            'timestamp': DateTime.now().millisecondsSinceEpoch.toString(),
+            'last_message': message
+          });
+        } catch (e) {
+          print(e);
+        }
       }
 
       return true;
@@ -952,20 +974,26 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Inbox update
-  Future<dynamic> inboxUpdateGroupJoinStatusFireBase({Key key,String selfUid,String uId,ChatGroups chatGroup,User user,bool isJoinGroup,
+  Future<dynamic> inboxUpdateGroupJoinStatusFireBase(
+      {Key key,
+      String selfUid,
+      String uId,
+      ChatGroups chatGroup,
+      User user,
+      bool isJoinGroup,
       bool isDeleted,
       bool isBlocked,
       bool isFromGroup}) async {
     try {
-      var documentTemp = await Firestore.instance
+      var documentTemp = await FirebaseFirestore.instance
           .collection('users_inbox')
-          .document(selfUid)
+          .doc(selfUid)
           .collection('inbox_user')
-          .document(uId)
+          .doc(uId)
           .get();
       //Rejoin group
-      if (documentTemp != null && documentTemp.data != null) {
-        var data = documentTemp.data;
+      if (documentTemp != null && documentTemp.data() != null) {
+        var data = documentTemp.data();
         data['timestamp'] = DateTime.now().millisecondsSinceEpoch.toString();
         if (isDeleted != null) {
           data['isDeletes'] = isDeleted;
@@ -976,25 +1004,24 @@ class FireBaseStore implements FireBaseStoreBase {
         if (isBlocked != null) {
           data['isBlock'] = isBlocked;
         }
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection('users_inbox')
-            .document(selfUid)
+            .doc(selfUid)
             .collection('inbox_user')
-            .document(uId)
-            .updateData(data);
+            .doc(uId)
+            .update(data);
         return true;
       }
       //Add new id
       else {
-        try{
+        try {
           //Add group in inbox
           await inboxNewEntryFireBase(
               selfUid: selfUid,
               uId: uId,
               chatGroup: chatGroup,
               isFromGroup: true);
-        }
-        catch (e) {
+        } catch (e) {
           // TODO
           print("firebase error $e");
           return false;
@@ -1009,26 +1036,26 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Inbox update in case of delete group or left group
-  Future<dynamic> inboxUpdateGroupDeleteStatusFireBase({Key key, String selfUid, String chatId, bool deleteStatus}) async {
+  Future<dynamic> inboxUpdateGroupDeleteStatusFireBase(
+      {Key key, String selfUid, String chatId, bool deleteStatus}) async {
     try {
-
-      var documentTemp = await Firestore.instance
+      var documentTemp = await FirebaseFirestore.instance
           .collection('users_inbox')
-          .document(selfUid)
+          .doc(selfUid)
           .collection('inbox_user')
-          .document(chatId)
+          .doc(chatId)
           .get();
       //Rejoin group
-      if (documentTemp != null && documentTemp.data != null) {
-        var data = documentTemp.data;
+      if (documentTemp != null && documentTemp.data() != null) {
+        var data = documentTemp.data();
         data['timestamp'] = DateTime.now().millisecondsSinceEpoch.toString();
         data['isDeletes'] = false;
-        Firestore.instance
+        FirebaseFirestore.instance
             .collection('users_inbox')
-            .document(selfUid)
+            .doc(selfUid)
             .collection('inbox_user')
-            .document(chatId)
-            .updateData(data);
+            .doc(chatId)
+            .update(data);
         return true;
       }
       //Add new id
@@ -1048,53 +1075,60 @@ class FireBaseStore implements FireBaseStoreBase {
       receiverId,
       String senderName,
       String uId,
-      String content,String notificationSentApi,
+      String content,
+      String notificationSentApi,
       bool isFromGroup,
       bool isFirstTime}) async {
     try {
-
       //Add user in inbox
-      if (!isFromGroup){
+      if (!isFromGroup) {
         String uName = await sharedPreferencesFile.readStr('user_name');
         String imageUser = await sharedPreferencesFile.readStr('imageUrl');
-        User selfUserDetails = new User(firstName: uName, imageUrl: imageUser);
-        User receiverUserDetails =
-        new User(firstName: uName, imageUrl: imageUser);
-        try{
+        UserInfo selfUserDetails = new UserInfo({"displayName": uName, "photoURL": imageUser});
+        UserInfo receiverUserDetails =
+            new UserInfo({"displayName": uName, "photoURL": imageUser});
+        try {
           // Add inbox in self chat
           await inboxNewEntryFireBase(
               selfUid: uId,
               uId: receiverId[0],
               user: receiverUserDetails,
               isFromGroup: false);
-        }
-        catch (e) {
+        } catch (e) {
           // TODO
           print("firebase error $e");
         }
-        try{
+        try {
           // Add inbox in receiver
           await inboxNewEntryFireBase(
               selfUid: receiverId[0],
               uId: uId,
               user: selfUserDetails,
               isFromGroup: false);
-        }
-        catch (e) {
+        } catch (e) {
           // TODO
           print("firebase error $e");
         }
       }
 
       //Sent notification
-      sentFCMNotificationFireBaseByApi(receiverId : receiverId,senderName: senderName,content: content,isFromGroup: false,isFirstTime: isFirstTime, uId: uId,notificationSentApi: notificationSentApi);
-      try
-      {
-        String selfUid =
-        await sharedPreferencesFile.readStr('chatUid');
-        await inboxUpdateNewMessageStatusFireBase(selfUid: selfUid,chatId: uId,message: content,isGroup: isFromGroup,receiverId: receiverId);
-      }
-      catch (e) {
+      sentFCMNotificationFireBaseByApi(
+          receiverId: receiverId,
+          senderName: senderName,
+          content: content,
+          isFromGroup: false,
+          isFirstTime: isFirstTime,
+          uId: uId,
+          notificationSentApi: notificationSentApi);
+      try {
+        String selfUid = await sharedPreferencesFile.readStr('chatUid');
+        await inboxUpdateNewMessageStatusFireBase(
+            selfUid: selfUid,
+            chatId: uId,
+            message: content,
+            isGroup: isFromGroup,
+            receiverId: receiverId);
+      } catch (e) {
         print(e);
       }
     } catch (e) {
@@ -1107,12 +1141,14 @@ class FireBaseStore implements FireBaseStoreBase {
   //Send Message group
   Future<dynamic> sentFCMNotificationFireBaseByApi(
       {Key key,
-        receiverId,
-        String senderName,
-        String uId,
-        String content,String notificationSentApi,
-        bool isFromGroup,bool isForGroupInvite,
-        bool isFirstTime}) async {
+      receiverId,
+      String senderName,
+      String uId,
+      String content,
+      String notificationSentApi,
+      bool isFromGroup,
+      bool isForGroupInvite,
+      bool isFirstTime}) async {
     try {
       //Normal message all time not first time
       int notificationFor = notificationOneToOneSecondC;
@@ -1126,7 +1162,7 @@ class FireBaseStore implements FireBaseStoreBase {
           notificationFor = notificationGroupC;
         }
       }
-      if(isForGroupInvite!=null && isForGroupInvite){
+      if (isForGroupInvite != null && isForGroupInvite) {
         notificationFor = notificationGroupInviteC;
       }
       Map data = {
@@ -1140,30 +1176,29 @@ class FireBaseStore implements FireBaseStoreBase {
       };
       //Add chat group name
       if (notificationFor == notificationGroupC)
-      data["group_name"] = senderName!=null ? senderName: "";
+        data["group_name"] = senderName != null ? senderName : "";
 
       //encode Map to JSON
       var requestBody = json.encode(data);
-      sharedPreferencesFile.readStr(accessToken)
-          .then((value) {
+      sharedPreferencesFile.readStr(accessToken).then((value) {
         String authorization = value;
-        String notificationUrl =  ConstantC.notificationFullUrl;
-        if (authorization != null && notificationUrl!=null) {
+        String notificationUrl = ConstantC.notificationFullUrl;
+        if (authorization != null && notificationUrl != null) {
           try {
-            new ApiRequest().apiRequestPostSendFCMNotificationOurServer(
-                url: notificationUrl,
-                bodyData: requestBody,
-                isLoader: false,
-                authorization: authorization)
+            new ApiRequest()
+                .apiRequestPostSendFCMNotificationOurServer(
+                    url: notificationUrl,
+                    bodyData: requestBody,
+                    isLoader: false,
+                    authorization: authorization)
                 .then((response) {
-                  print("$response");
+              print("$response");
             });
           } catch (e) {
             print(e);
           }
         }
       });
-
     } catch (e) {
       print(e);
       return "";
@@ -1172,88 +1207,89 @@ class FireBaseStore implements FireBaseStoreBase {
   }
 
   //Join group
-  Future<dynamic> joinChatGroupFireBase({Key key, groupId, user}) async {
+  Future<dynamic> joinChatGroupFireBase({Key key, groupId, UsersDetails user}) async {
     //Check group id is created or not
     if (groupId != null) {
       try {
-       var documentDetails =  await Firestore.instance
+        var documentDetails = await FirebaseFirestore.instance
             .collection("user_groups")
-            .document(groupId['gId']).get();
-       //Check user already added in group
-       //Yes exist
-       if(documentDetails!=null && documentDetails.data!=null){
+            .doc(groupId['gId'])
+            .get();
+        //Check user already added in group
+        //Yes exist
+        if (documentDetails != null && documentDetails.data() != null) {
+          // Map<String, String> inboxMap = new Map();
+          List listData = documentDetails.data()['usersDetails'];
+          List listDataNew = new List();
+          bool isAdded = false;
+          for (var rowData in listData) {
+            if (rowData != null && rowData['id'] == user.id) {
+              try {
+                rowData['isRequestNotAccepted'] = false;
+              } catch (e) {
+                print(e);
+              }
+              isAdded = true;
+              listDataNew.add(rowData);
+              print("firebase error $rowData");
+            } else {
+              listDataNew.add(rowData);
+              print("firebase error $rowData");
+            }
+          }
+          //if user not joiend group
+          if (!isAdded && user.id != null) {
+            var rowDataTemp = {
+              "name": "",
+              "imageUrl": null,
+              "pushToken": null,
+              "id": user.id,
+              "isRequestNotAccepted": false
+            };
+            listDataNew.add(rowDataTemp);
+            print("firebase error $rowDataTemp");
+            try {
+              await FirebaseFirestore.instance
+                  .collection("user_groups")
+                  .doc(groupId['gId'])
+                  .update({"usersDetails": FieldValue.arrayUnion(listDataNew)});
+            } catch (e) {
+              print(e);
+            }
+          } else {
+            try {
+              await FirebaseFirestore.instance
+                  .collection("user_groups")
+                  .doc(groupId['gId'])
+                  .update({"usersDetails": listDataNew});
+            } catch (e) {
+              print(e);
+            }
+          }
+          print("firebase error $documentDetails");
+        }
+        //Not added and add new user when it join
+        else {
+          await FirebaseFirestore.instance
+              .collection("user_groups")
+              .doc(groupId['gId'])
+              .update({
+            "usersDetails": FieldValue.arrayUnion([
+              {
+                "name": user.name != null ? user.name : "",
+                "id": user.id,
+                "imageUrl": user.imageUrl,
+                "pushToken": user.pushToken,
+                "isRequestNotAccepted": false,
+              }
+            ])
+          });
+        }
 
-         // Map<String, String> inboxMap = new Map();
-         List listData = documentDetails.data['usersDetails'];
-         List listDataNew = new List();
-         bool isAdded = false;
-         for (var rowData in listData) {
-           if (rowData != null && rowData['id'] == user.documentID) {
-             try {
-               rowData['isRequestNotAccepted'] = false;
-             } catch (e) {
-               print(e);
-             }
-             isAdded = true;
-             listDataNew.add(rowData);
-             print("firebase error $rowData");
-           } else {
-             listDataNew.add(rowData);
-             print("firebase error $rowData");
-           }
-         }
-         //if user not joiend group
-         if(!isAdded && user.documentID!=null){
-           var rowDataTemp = {"name":"","imageUrl":null,"pushToken":null,"id":user.documentID,"isRequestNotAccepted":false};
-           listDataNew.add(rowDataTemp);
-           print("firebase error $rowDataTemp");
-           try {
-             await Firestore.instance
-                 .collection("user_groups")
-                 .document(groupId['gId'])
-                 .updateData(
-                 {"usersDetails": FieldValue.arrayUnion(listDataNew)});
-
-           } catch (e) {
-             print(e);
-           }
-         }
-         else {
-           try {
-             await Firestore.instance
-                 .collection("user_groups")
-                 .document(groupId['gId'])
-                 .updateData(
-                 {"usersDetails": listDataNew});
-           } catch (e) {
-             print(e);
-           }
-         }
-         print("firebase error $documentDetails");
-
-       }
-       //Not added and add new user when it join
-       else{
-         await Firestore.instance
-             .collection("user_groups")
-             .document(groupId['gId'])
-             .updateData({
-           "usersDetails": FieldValue.arrayUnion([
-             {
-               "name": user.firstName != null ? user.firstName : "",
-               "id": user.documentID,
-               "imageUrl": user.imageUrl,
-               "pushToken": user.fcmToken,
-               "isRequestNotAccepted": false,
-             }
-           ])
-         });
-       }
-
-       /*await Firestore.instance
+        /*await FirebaseFirestore.instance
            .collection("user_groups")
-           .document(groupId['gId'])
-           .updateData({
+           .doc(groupId['gId'])
+           .update({
          "usersDetails": FieldValue.arrayUnion([
            {
              "name": user.firstName != null ? user.firstName : "",
@@ -1265,23 +1301,22 @@ class FireBaseStore implements FireBaseStoreBase {
          ])
        });*/
 
-        try{
-        //Update group in in box
-        var uId = groupId['gId'];
-        String selfUid = user.documentID;
-        ChatGroups mChatGroups =
-            new ChatGroups(name: groupId['name'], image: groupId['name']);
-        await inboxUpdateGroupJoinStatusFireBase(
-            selfUid: selfUid,
-            uId: uId,
-            chatGroup: mChatGroups,
-            isJoinGroup: true,
-            isFromGroup: true);
-      }
-      catch (e) {
-        // TODO
-        print("firebase error $e");
-      }
+        try {
+          //Update group in in box
+          var uId = groupId['gId'];
+          String selfUid = user.id;
+          ChatGroups mChatGroups =
+              new ChatGroups(name: groupId['name'], image: groupId['name']);
+          await inboxUpdateGroupJoinStatusFireBase(
+              selfUid: selfUid,
+              uId: uId,
+              chatGroup: mChatGroups,
+              isJoinGroup: true,
+              isFromGroup: true);
+        } catch (e) {
+          // TODO
+          print("firebase error $e");
+        }
         return true;
       } on Exception catch (e) {
         // TODO
@@ -1311,14 +1346,15 @@ class FireBaseStore implements FireBaseStoreBase {
           // TODO
           print("firebase error $e");
         }
-        final QuerySnapshot result = await Firestore.instance
+        final QuerySnapshot result = await FirebaseFirestore.instance
             .collection('user_groups')
             .where('gId', isEqualTo: groupId)
-            .getDocuments();
-        final List<DocumentSnapshot> documents = result.documents;
-        if (documents.length > 0) {
+            .get();
+        // .getDocuments();
+        final List<DocumentSnapshot> docs = result.docs;
+        if (docs.length > 0) {
           // Map<String, String> inboxMap = new Map();
-          List listData = documents[0].data['usersDetails'];
+          List listData = docs[0]['usersDetails'];
           List listDataNew = new List();
           for (var rowData in listData) {
             if (rowData != null && rowData['id'] == user.documentID) {
@@ -1328,11 +1364,11 @@ class FireBaseStore implements FireBaseStoreBase {
               print("firebase error $rowData");
             }
           }
-          await Firestore.instance
+          await FirebaseFirestore.instance
               .collection("user_groups")
-              .document(groupId)
-              .updateData({"usersDetails": listDataNew});
-          print("firebase error $documents");
+              .doc(groupId)
+              .update({"usersDetails": listDataNew});
+          print("firebase error $docs");
         }
         return "";
       } on Exception catch (e) {
@@ -1345,14 +1381,14 @@ class FireBaseStore implements FireBaseStoreBase {
     }
   }
 
-
   //left group
-  Future<dynamic> setBaseUrl({Key key,String url}) async {
+  Future<dynamic> setBaseUrl({Key key, String url}) async {
     //Check group id is created or not
     ConstantC.baseUrl = url;
-        return true;
+    return true;
   }
-  Future<dynamic> setNotificationUrl({Key key,String url}) async {
+
+  Future<dynamic> setNotificationUrl({Key key, String url}) async {
     //Check group id is created or not
     ConstantC.notificationFullUrl = url;
     return true;

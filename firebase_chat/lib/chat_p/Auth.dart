@@ -4,20 +4,21 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_chat/chat_p/local_constant.dart';
 import 'package:firebase_chat/chat_p/shared_preferences_file.dart';
 import 'package:firebase_chat/firebse_chat_main.dart';
-import 'package:firebase_chat/screens/inbox_p/models/user.dart';
+import 'package:firebase_chat/screens/inbox_p/models/user_profile_details.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-
+import 'package:firebase_chat/screens/inbox_p/models/user_profile_details.dart';
 
 // In case we decide to implement another kind of authorization method
 abstract class AuthBase {
-  Stream<User> get onAuthStateChanged;
-  Future<User> currentUser();
-  Future<User> signInWithEmailAndPassword(String email, String password);
-  Future<User> createUserWithEmailAndPassword(User user, String password);
-  Future<User> signInAnonymously();
-  Future<User> signInWithGoogle();
-  Future<User> signInWithFacebook();
+  //Stream<UserInfo> get onAuthStateChanged;
+  Future<UserInfo> currentUser();
+  Future<UserInfo> signInWithEmailAndPassword(String email, String password);
+  Future<UserInfo> createUserWithEmailAndPassword(
+      UserProfileDetails user, String password);
+  Future<UserInfo> signInAnonymously();
+  Future<UserInfo> signInWithGoogle();
+  Future<UserInfo> signInWithFacebook();
   Future<String> getFcmToken();
   Future<void> signOut();
 }
@@ -25,17 +26,26 @@ abstract class AuthBase {
 class Auth implements AuthBase {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  User _userFromFirebase(FirebaseUser firebaseUser) {
+  UserInfo _userFromFirebase(UserInfo firebaseUser) {
     if (firebaseUser == null) {
       return null;
     }
 
-    return User(
+    Map<String, String> _data = {
+      "uid": firebaseUser.uid,
+      "providerId": firebaseUser.providerId,
+      "email": firebaseUser.email,
+      "displayName": '${firebaseUser.displayName}',
+      "photoURL": '${firebaseUser.photoURL}',
+      "phoneNumber": firebaseUser.phoneNumber,
+    };
+    return UserInfo(
+            _data) /*UserInfo({
       documentID: firebaseUser.uid,
       providerId: firebaseUser.providerId,
       email: firebaseUser.email,
-      /*firstName: names[0],
-      lastName: names[1],*/
+      */ /*firstName: names[0],
+      lastName: names[1],*/ /*
      // displayName: firebaseUser.displayName,
       imageUrl: firebaseUser.photoUrl,
       phoneNumber: firebaseUser.phoneNumber,
@@ -43,28 +53,40 @@ class Auth implements AuthBase {
       fcmToken: '',
       numOfReviews: 0,
       wishlistProducts: [],
-      reviewedProducts: [],
-    );
+      reviewedProducts: []}
+    )*/
+        ;
   }
 
-  Future<User> _userFromRegisterAndFirebase(FirebaseUser firebaseUser, User newUser) async {
+  Future<UserInfo> _userFromRegisterAndFirebase(
+      UserInfo firebaseUser, UserProfileDetails newUser) async {
     if (firebaseUser == null) {
       return null;
     }
     //Add new user on fire-base users table
     try {
-    await new FireBaseStore().addNewUserOnFireBase(uId:firebaseUser.uid,nickName: newUser.firstName,imageUrl: "");
-    }
-    catch (e) {
+      await new FireBaseStore().addNewUserOnFireBase(
+          uId: firebaseUser.uid, nickName: newUser.displayName, imageUrl: "");
+    } catch (e) {
       print(e);
     }
     //Store user chat id
     try {
-    await sharedPreferencesFile.saveStr(chatUid,firebaseUser.uid);
+      await sharedPreferencesFile.saveStr(chatUid, firebaseUser.uid);
     } catch (e) {
       print(e);
     }
-   return User(
+
+    Map<String, String> _data = {
+      "uid": firebaseUser.uid,
+      "providerId": firebaseUser.providerId,
+      "email": newUser.email,
+      "displayName": '${firebaseUser.displayName}',
+      "photoURL": '${firebaseUser.photoURL}',
+      "phoneNumber": newUser.phoneNumber,
+    };
+    return UserInfo(
+            _data) /*UserInfo(
       documentID: firebaseUser.uid,
       providerId: firebaseUser.providerId,
       email: newUser.email,
@@ -78,29 +100,49 @@ class Auth implements AuthBase {
       numOfReviews: 0,
       wishlistProducts: [],
       reviewedProducts: [],
-    );
+    )*/
+        ;
   }
 
-  Stream<User> get onAuthStateChanged {
-    return firebaseAuth.onAuthStateChanged.map((FirebaseUser firebaseUser) {
+  /*Stream<UserInfo> get onAuthStateChanged {
+    return firebaseAuth.onAuthStateChanged.map((UserInfo firebaseUser) {
       if (firebaseUser == null) {
         return null;
       }
-      return User(documentID: firebaseUser.uid);
+      return UserInfo({"uid": firebaseUser.uid});
     });
+  }*/
+
+  Future<UserInfo> currentUser() async {
+    var authResult = await FirebaseAuth.instance.currentUser;
+    Map<String, String> _data = {
+      "uid": authResult.uid,
+      // "providerId": authResult.providerId,
+      "email": authResult.email,
+      "displayName": '${authResult.displayName}',
+      "photoURL": '${authResult.photoURL}',
+      "phoneNumber": '${authResult.phoneNumber}',
+    };
+    return _userFromFirebase(UserInfo(_data));
+    //return _userFromFirebase(firebaseUser);
   }
 
-  Future<User> currentUser() async {
-    FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
-    return _userFromFirebase(firebaseUser);
-  }
-
-  Future<User> signInAnonymously() async {
+  Future<UserInfo> signInAnonymously() async {
     final authResult = await FirebaseAuth.instance.signInAnonymously();
-    return _userFromFirebase(authResult.user);
+    Map<String, String> _data = {
+      "uid": authResult.user.uid,
+      "providerId": authResult.additionalUserInfo.providerId,
+      "email": authResult.user.email,
+      "displayName": '${authResult.user.displayName}',
+      "photoURL": '${authResult.user.photoURL}',
+      "phoneNumber": '${authResult.user.phoneNumber}',
+    };
+    return _userFromFirebase(UserInfo(_data));
+    //return _userFromFirebase(authResult.additionalUserInfo);
   }
 
-  Future<User> signInWithEmailAndPassword(String email, String password) async {
+  Future<UserInfo> signInWithEmailAndPassword(
+      String email, String password) async {
     final authResult = await firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
@@ -110,15 +152,15 @@ class Auth implements AuthBase {
     }
     //Store user chat id
     try {
-      await sharedPreferencesFile.saveStr(chatUid,authResult.user.uid);
+      await sharedPreferencesFile.saveStr(chatUid, authResult.user.uid);
     } catch (e) {
       print(e);
     }
-    return User(documentID: authResult.user.uid);
+    return UserInfo({"uid": authResult.user.uid});
   }
 
-  Future<User> createUserWithEmailAndPassword(
-    User user,
+  Future<UserInfo> createUserWithEmailAndPassword(
+    UserProfileDetails user,
     String password,
   ) async {
     firebaseAuth = FirebaseAuth.instance;
@@ -126,41 +168,61 @@ class Auth implements AuthBase {
       email: user.email,
       password: password,
     );
-    return _userFromRegisterAndFirebase(authResult.user, user);
+
+    Map<String, String> _data = {
+      "uid": authResult.user.uid,
+      "providerId": authResult.additionalUserInfo.providerId,
+      "email": authResult.user.email,
+      "displayName": '${authResult.user.displayName}',
+      "photoURL": '${authResult.user.photoURL}',
+      "phoneNumber": '${authResult.user.phoneNumber}',
+    };
+    // return _userFromFirebase(UserInfo(_data));
+    return _userFromRegisterAndFirebase(UserInfo(_data), user);
   }
+
 //Get fire-base token of registered user
   Future<String> getFcmToken() async {
     try {
-      final FirebaseMessaging fcm = FirebaseMessaging();
+      final FirebaseMessaging fcm = FirebaseMessaging.instance;
       String fcmToken;
       if (Platform.isIOS) {
-        fcm.requestNotificationPermissions(IosNotificationSettings());
+        fcm.requestPermission(
+            /*IosNotificationSettings()*/ criticalAlert: true);
       } else {
         fcmToken = await fcm.getToken();
       }
       if (fcmToken != null) {
         return fcmToken;
-      }
-      else{
+      } else {
         return null;
       }
     } catch (e) {
       return null;
-
     }
   }
-  Future<User> signInWithGoogle() async {
+
+  Future<UserInfo> signInWithGoogle() async {
     GoogleSignIn googleSignIn = GoogleSignIn();
     GoogleSignInAccount googleUser = await googleSignIn.signIn();
     if (googleUser != null) {
       GoogleSignInAuthentication googleAuth = await googleUser.authentication;
       if (googleAuth.idToken != null && googleAuth.accessToken != null) {
         final authResult = await FirebaseAuth.instance
-            .signInWithCredential(GoogleAuthProvider.getCredential(
+            .signInWithCredential(GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
-        return _userFromFirebase(authResult.user);
+
+        Map<String, String> _data = {
+          "uid": authResult.user.uid,
+          "providerId": authResult.additionalUserInfo.providerId,
+          "email": authResult.user.email,
+          "displayName": '${authResult.user.displayName}',
+          "photoURL": '${authResult.user.photoURL}',
+          "phoneNumber": '${authResult.user.phoneNumber}',
+        };
+        return _userFromFirebase(UserInfo(_data));
       } else {
         throw Exception('Missing Google Auth Token');
       }
@@ -169,7 +231,7 @@ class Auth implements AuthBase {
     }
   }
 
-  Future<User> signInWithFacebook() async {
+  Future<UserInfo> signInWithFacebook() async {
 /*    final facebookLogin = FacebookLogin();
     FacebookLoginResult result = await facebookLogin.logIn(
       [
@@ -180,7 +242,7 @@ class Auth implements AuthBase {
     );
     if (result.accessToken != null) {
       final authResult = await firebaseAuth
-          .signInWithCredential(FacebookAuthProvider.getCredential(
+          .signInWithCredential(FacebookAuthProvider.credential(
         accessToken: result.accessToken.token,
       ));
       return _userFromFirebase(authResult.user);

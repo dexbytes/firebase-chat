@@ -31,14 +31,12 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
   FireBaseStore _fireBaseStore = new FireBaseStore();
 
   _LoginWithEmailScreen() {
-    appDimens.appDimensFind(context: this.context);
+    // appDimens.appDimensFind(context: this.context);
     deviceInfo();
-    sharedPreferencesFile
-        .readStr(deviceToken)
-        .then((value) {
+    sharedPreferencesFile.readStr(deviceToken).then((value) {
       if (value == null) {
         print('getToken :');
-       // new FirebaseNotifications().getToken();
+        // new FirebaseNotifications().getToken();
       } else {
         print('already generated : $value');
         //new FirebaseNotifications().firebaseCloudMessagingListeners();
@@ -54,13 +52,10 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
       print('is a IOS');
 
       //Device_type
-      sharedPreferencesFile
-          .readStr(deviceTypeC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceTypeC).then((value) {
         if (value == null) {
           print('Device_type ios}');
-         sharedPreferencesFile
-              .saveStr(deviceTypeC, '2');
+          sharedPreferencesFile.saveStr(deviceTypeC, '2');
         } else {
           print('Device_type $value');
           // deviceType = '2'
@@ -68,27 +63,22 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
       });
 
       //Device_os_version
-      sharedPreferencesFile
-          .readStr(deviceOsVersionC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceOsVersionC).then((value) {
         if (value == null) {
           print('Device_os_version ${iosInfo.systemVersion}');
-          sharedPreferencesFile
-              .saveStr(deviceOsVersionC, iosInfo.systemVersion);
+          sharedPreferencesFile.saveStr(
+              deviceOsVersionC, iosInfo.systemVersion);
         } else {
           print('Device_os_version $value');
         }
       });
 
       //Device id
-      sharedPreferencesFile
-          .readStr(deviceIdC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceIdC).then((value) {
         if (value == null) {
           //device id
           print('Device id ${iosInfo.identifierForVendor}');
-          sharedPreferencesFile
-              .saveStr(deviceIdC, iosInfo.identifierForVendor);
+          sharedPreferencesFile.saveStr(deviceIdC, iosInfo.identifierForVendor);
         } else {
           print('Device id $value');
         }
@@ -98,13 +88,10 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
       print('is a Andriod');
 
       //device type
-      sharedPreferencesFile
-          .readStr(deviceTypeC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceTypeC).then((value) {
         if (value == null) {
           print('Device_type android}');
-          sharedPreferencesFile
-              .saveStr(deviceTypeC, '1');
+          sharedPreferencesFile.saveStr(deviceTypeC, '1');
         } else {
           print('Device_type $value');
           //  deviceType = '1'
@@ -112,27 +99,22 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
       });
 
       //device os version
-      sharedPreferencesFile
-          .readStr(deviceOsVersionC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceOsVersionC).then((value) {
         if (value == null) {
           print('Device_os_version ${androidInfo.version.release}');
-          sharedPreferencesFile
-              .saveStr(deviceOsVersionC, androidInfo.version.release);
+          sharedPreferencesFile.saveStr(
+              deviceOsVersionC, androidInfo.version.release);
         } else {
           print('Device_os_version $value');
         }
       });
 
       //device id
-      sharedPreferencesFile
-          .readStr(deviceIdC)
-          .then((value) {
+      sharedPreferencesFile.readStr(deviceIdC).then((value) {
         if (value == null) {
           //device id
           print(' device id ${androidInfo.androidId}');
-          sharedPreferencesFile
-              .saveStr(deviceIdC, androidInfo.androidId);
+          sharedPreferencesFile.saveStr(deviceIdC, androidInfo.androidId);
         } else {
           print('device id $value');
         }
@@ -191,8 +173,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
     //Get Screen size
     appDimens.appDimensFind(context: context);
 
-    topViewHeight =
-        appDimens.heightDynamic(value: 245);
+    topViewHeight = appDimens.heightDynamic(value: 245);
     // Check validation
     bool _isAllFieldValid() {
       if (controllers['email'].text == null ||
@@ -200,26 +181,20 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
           controllers['email'].text == "#error") {
         setState(() {
           if (controllers['email'].text != "#error") {
-            errorMessages['email'] =
-                appString.emailNotBlank;
+            errorMessages['email'] = appString.emailNotBlank;
           }
         });
         return false;
-      }
-
-      else if (controllers['password'].text == null ||
+      } else if (controllers['password'].text == null ||
           controllers['password'].text == '' ||
           controllers['password'].text == "#error") {
         setState(() {
           if (controllers['password'].text != "#error") {
-            errorMessages['password'] =
-                appString.passwordNotBlank;
+            errorMessages['password'] = appString.passwordNotBlank;
           }
         });
         return false;
-      }
-
-      else {
+      } else {
         return true;
       }
     }
@@ -234,8 +209,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
           style: TextStyle(
               fontFamily: appFonts.defaultFont,
               //fontSize: screenWidth/18,
-              fontSize:
-                  appDimens.fontSize(value: 24),
+              fontSize: appDimens.fontSize(value: 24),
               fontWeight: FontWeight.w400,
               color: appColors.textHeadingColor),
         ),
@@ -244,26 +218,25 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
 
     //User name view
     Widget userNameView = Padding(
-      padding: EdgeInsets.only(
-          top: appDimens.verticalMarginPadding(value: 10)),
-        child: customView.inputFields(
+      padding: EdgeInsets.only(top: appDimens.verticalMarginPadding(value: 10)),
+      child: customView.inputFields(
         keyboardType: 2,
-        inputAction:2,
-        maxLength :50,
+        inputAction: 2,
+        maxLength: 50,
         padding: EdgeInsets.all(appDimens.horizontalMarginPadding(value: 16)),
-        readOnly:false,
-        focusNode:focusNodes['email'],
-        controller:controllers['email'],
-        hint:"E-Mail",
-        hintTextColor:appColors.editTextHintColor[100],
-        fontSize:appDimens.fontSize(),
-        error:errorMessages['email'],
-          borderColor: appColors.editTextBorderColor[100],
-          enabledBorder: appColors.editTextEnabledBorderColor[100],
-          focusedBorderColor: appColors.editTextFocusedBorderColor[100],
-          fillColor:appColors.editTextBgColor[100],
-          cursorColor:appColors.editCursorColor[200],
-        ontextChanged:(value) {
+        readOnly: false,
+        focusNode: focusNodes['email'],
+        controller: controllers['email'],
+        hint: "E-Mail",
+        hintTextColor: appColors.editTextHintColor[100],
+        fontSize: appDimens.fontSize(),
+        error: errorMessages['email'],
+        borderColor: appColors.editTextBorderColor[100],
+        enabledBorder: appColors.editTextEnabledBorderColor[100],
+        focusedBorderColor: appColors.editTextFocusedBorderColor[100],
+        fillColor: appColors.editTextBgColor[100],
+        cursorColor: appColors.editCursorColor[200],
+        ontextChanged: (value) {
           if (validation.isNotEmpty(value)) {
             if (validation.validateEmail(value)) {
               print(value);
@@ -274,21 +247,18 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
             } else {
               setState(() {
                 isUserNameValid = false;
-                errorMessages['email'] =
-                    appString.validEmail;
+                errorMessages['email'] = appString.validEmail;
               });
             }
-          }
-          else {
+          } else {
             setState(() {
               //controllers['email'].text = "";
               isUserNameValid = false;
-              errorMessages['email'] =
-                  appString.emailNotBlank;
+              errorMessages['email'] = appString.emailNotBlank;
             });
           }
         },
-        onSubmit:(value) {
+        onSubmit: (value) {
           {
             FocusScope.of(context).requestFocus(new FocusNode());
           }
@@ -301,51 +271,56 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
 
     Widget password = Padding(
       padding: EdgeInsets.only(
-          top: appDimens.verticalMarginPadding(value: 10),bottom: appDimens.verticalMarginPadding(value: 10)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            /*inputFieldsLabel(AppValuesFilesLink().appValuesString.labelNewPass),*/
-            Padding(
-                padding: EdgeInsets.only(
-                    top: appDimens.verticalMarginPadding(value: 13),bottom:appDimens.verticalMarginPadding(value: 20)),
-                child: customView.inputPasswordFields(
-                  keyboardType: 3,
-                  inputAction: 1,
-                  maxLength: 50,
-                  showPass: showNewPass,
-                  iconButton: IconButton(
-                    icon: customView.suffixIconForPassword(showNewPass),
-                    onPressed: () {
-                      setState(() {
-                        showNewPass = !showNewPass;
-                      });
-                    },
-                  ),
-                  readOnly: false,
-                  padding: EdgeInsets.all(appDimens.horizontalMarginPadding(value: 16)),
-                  focusNode: focusNodes['password'],
-                  controller: controllers['password'],
-                  hint: appString.hintPassword,
-                  fontSize:appDimens.fontSize(value: 18),
-                  error: errorMessages['password'],
-                  errorColor: Colors.red,
-                  borderColor: appColors.editTextBorderColor[100],
-                  enabledBorder: appColors.editTextEnabledBorderColor[100],
-                  fillColor:appColors.editTextBgColor[100],
-                  focusedBorderColor: appColors.editTextFocusedBorderColor[100],
-                  cursorColor:appColors.editCursorColor[200],
-                  hintTextColor: appColors.editTextHintColor[100],
-                  ontextChanged: (value) {
-                    if (validation.isNotEmpty(value)) {
-                      if (value.length > 5) {
-                        print(value);
-                        if (validation.isPasswordValidation(value)) {
-                          if (controllers['password'].text != null &&  controllers['password'].text != "") {
-                            setState(() {
-                              errorMessages['password'] = null;
-                              passwordVisible = true; });
-                            /*if (controllers['password'].text ==
+          top: appDimens.verticalMarginPadding(value: 10),
+          bottom: appDimens.verticalMarginPadding(value: 10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          /*inputFieldsLabel(AppValuesFilesLink().appValuesString.labelNewPass),*/
+          Padding(
+              padding: EdgeInsets.only(
+                  top: appDimens.verticalMarginPadding(value: 13),
+                  bottom: appDimens.verticalMarginPadding(value: 20)),
+              child: customView.inputPasswordFields(
+                keyboardType: 3,
+                inputAction: 1,
+                maxLength: 50,
+                showPass: showNewPass,
+                iconButton: IconButton(
+                  icon: customView.suffixIconForPassword(showNewPass),
+                  onPressed: () {
+                    setState(() {
+                      showNewPass = !showNewPass;
+                    });
+                  },
+                ),
+                readOnly: false,
+                padding: EdgeInsets.all(
+                    appDimens.horizontalMarginPadding(value: 16)),
+                focusNode: focusNodes['password'],
+                controller: controllers['password'],
+                hint: appString.hintPassword,
+                fontSize: appDimens.fontSize(value: 18),
+                error: errorMessages['password'],
+                errorColor: Colors.red,
+                borderColor: appColors.editTextBorderColor[100],
+                enabledBorder: appColors.editTextEnabledBorderColor[100],
+                fillColor: appColors.editTextBgColor[100],
+                focusedBorderColor: appColors.editTextFocusedBorderColor[100],
+                cursorColor: appColors.editCursorColor[200],
+                hintTextColor: appColors.editTextHintColor[100],
+                ontextChanged: (value) {
+                  if (validation.isNotEmpty(value)) {
+                    if (value.length > 5) {
+                      print(value);
+                      if (validation.isPasswordValidation(value)) {
+                        if (controllers['password'].text != null &&
+                            controllers['password'].text != "") {
+                          setState(() {
+                            errorMessages['password'] = null;
+                            passwordVisible = true;
+                          });
+                          /*if (controllers['password'].text ==
                             controllers['confirm_pass'].text) {
                           setState(() {
                             //isPasswordValid = true;
@@ -355,159 +330,61 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                         } else {
                           errorMessages['password'] = appString.passwordConfirmation;
                         }*/
-                          } else {
-                            setState(() {
-                              //isPasswordValid = true;
-                              errorMessages['password'] = null;
-                            });
-                          }
-                        }
-                        else {
+                        } else {
                           setState(() {
-                            errorMessages['password'] = appString.passContainSpecialChar;
-                            passwordVisible = false;
+                            //isPasswordValid = true;
+                            errorMessages['password'] = null;
                           });
                         }
                       } else {
                         setState(() {
-                          errorMessages['password'] = appString.passwordLength;
+                          errorMessages['password'] =
+                              appString.passContainSpecialChar;
                           passwordVisible = false;
                         });
                       }
                     } else {
                       setState(() {
-                        errorMessages['password'] = appString.newPasswordNotBlank;
+                        errorMessages['password'] = appString.passwordLength;
                         passwordVisible = false;
                       });
                     }
-                    _isAllFieldValid();
-                  },
-                  onSubmit: (value) {
-                    /*FocusScope.of(context)
-                    .requestFocus(focusNodes['confirm_pass']);*/
-                    FocusScope.of(context).requestFocus(new FocusNode());
+                  } else {
                     setState(() {
-                      controllers['password'].text = value;
+                      errorMessages['password'] = appString.newPasswordNotBlank;
+                      passwordVisible = false;
                     });
-                  },
-                )),
-          ],
-        ),
+                  }
+                  _isAllFieldValid();
+                },
+                onSubmit: (value) {
+                  /*FocusScope.of(context)
+                    .requestFocus(focusNodes['confirm_pass']);*/
+                  FocusScope.of(context).requestFocus(new FocusNode());
+                  setState(() {
+                    controllers['password'].text = value;
+                  });
+                },
+              )),
+        ],
+      ),
     );
 
     //Input fields label
     Widget inputFieldsLabel(label) {
       return Padding(
-        padding: EdgeInsets.only(
-            top: appDimens.verticalMarginPadding(value: 24)),
+        padding:
+            EdgeInsets.only(top: appDimens.verticalMarginPadding(value: 24)),
         child: Text(
           label,
           style: TextStyle(
               fontFamily: appFonts.defaultFont,
-              fontSize:
-                  appDimens.fontSize(value: 14),
+              fontSize: appDimens.fontSize(value: 14),
               color: appColors.textNormalColor[100]),
         ),
       );
     }
 
-    /*//Terms and condition view
-    Widget termAndCondition = Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.only(
-          top: appDimens.verticalMarginPadding(value: 26),
-          bottom: appDimens.verticalMarginPadding(value: 26)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          GestureDetector(
-              onTap: () {
-                setState(() {
-                  agree = !agree;
-                  *//*ProjectUtil.printP(
-                      "email", "terms and condition  value $agree");*//*
-                });
-              },
-              child: Container(
-                  padding: EdgeInsets.only(
-                      right: appDimens.horizontalMarginPadding(value: 2)),
-                  //   alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Image(
-                        image: AssetImage(agree
-                            ? 'assets/images/resonberg_login_email/check_light.png'
-                            : 'assets/images/resonberg_login_email/check_un_light.png'),
-                        width: appDimens.iconSquareAccordingScreen(value: 6),
-                        height: appDimens.iconSquareAccordingScreen(value: 6),
-                        semanticLabel: agree ? 'agree' : 'disagree',
-                      ),
-                    ],
-                  ))),
-          Expanded(
-            child: Align(
-              alignment: Alignment.center,
-              child: GestureDetector(
-                onTap: () {
-                  setState(() {
-                    agree = !agree;
-                    *//*ProjectUtil.printP(
-                        "email", "terms and condition  value $agree");*//*
-                  });
-                },
-                child: RichText(
-                  text: TextSpan(
-                    style: TextStyle(
-                        fontWeight: FontWeight.w400,
-                        fontFamily:
-                            appFonts.defaultFont,
-                        color: appColors.textNormalColor[100],
-                        fontSize: appDimens.fontSize(value: 14)),
-                    text: appString.acceptTermsAndConditions,
-                    children: <TextSpan>[
-                      TextSpan(
-                        text: appString.termsAndConditions,
-                        recognizer: new TapGestureRecognizer()
-                          ..onTap = () {
-                            *//*Navigator.push(
-                                context,
-                                SlideRightRoute(
-                                    widget: AppScreensFilesLink()
-                                        .mTermsAndServices()));*//*
-                          },
-                        style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.w600,
-                          fontFamily:
-                              appFonts.defaultFont,
-                          color: appColors.textNormalColor[600],
-                          fontSize: appDimens.fontSize(value: 14),
-                        ),
-                      ),
-                      TextSpan(
-                        text: '"',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontFamily:
-                              appFonts.defaultFont,
-                          color: appColors.textNormalColor[600],
-                          fontSize: appDimens.fontSize(value: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.left,
-                ),
-              ),
-            ),
-          )
-        ],
-      ),
-    );
-*/
     //Submit button view
     Widget submitButton = Container(
         height: appDimens.buttonHeight(value: 55),
@@ -531,18 +408,17 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                         (isUserNameValid && passwordVisible)
                             ? appColors.buttonBgColor
                             : appColors.appDisabledColor[100],
-                         appDimens.fontSizeButton(value: 16),
+                        appDimens.fontSizeButton(value: 16),
                         2, (value) {
                         if (isUserNameValid && passwordVisible) {
                           if (_isAllFieldValid()) {
                             /*ProjectUtil.printP(
                                 "email", 'yes all field are valid');*/
                             loginStatusApi(
-                              controllers['email'].text.toString(),controllers['password'].text.toString(),
+                              controllers['email'].text.toString(),
+                              controllers['password'].text.toString(),
                             );
-                          }
-                          else
-                          {
+                          } else {
                             /*ProjectUtil.printP(
                                 "email", 'no all field are not valid');*/
                           }
@@ -566,7 +442,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
             left: appDimens.horizontalMarginPadding(value: 21),
             right: appDimens.horizontalMarginPadding(value: 21),
             top: appDimens.verticalMarginPadding(value: 29),
-            bottom:appDimens.verticalMarginPadding(value: 22)),
+            bottom: appDimens.verticalMarginPadding(value: 22)),
         //height: screenHeight/1.8,
         child: Center(
           child: Column(
@@ -593,8 +469,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) =>
-                      RegisterWithEmailScreen()));
+                  builder: (context) => RegisterWithEmailScreen()));
           //launch("mailto:" + appString.contactEmail);
         },
         child: Container(
@@ -607,11 +482,11 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                 alignment: Alignment.bottomCenter,
                 margin: EdgeInsets.only(
                   top: appDimens.verticalMarginPadding(
-                        value: 23,
-                      ),
+                    value: 23,
+                  ),
                   bottom: appDimens.verticalMarginPadding(
-                        value: 36,
-                      ),
+                    value: 36,
+                  ),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -626,8 +501,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                               fontFamily: appFonts.defaultFont,
                               color: appColors.textNormalColor[100],
                               fontSize: appDimens.fontSize(value: 14)),
-                          text:
-                              appString.contactText,
+                          text: appString.contactText,
                           children: <TextSpan>[
                             TextSpan(
                               text: appString.registerEmail,
@@ -635,7 +509,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                                 fontWeight: FontWeight.w600,
                                 fontFamily: appFonts.defaultFont,
                                 color: appColors.textNormalColor[600],
-                                fontSize:appDimens.fontSize(value: 14),
+                                fontSize: appDimens.fontSize(value: 14),
                                 //decoration: TextDecoration.underline,
                               ),
                             )
@@ -656,8 +530,7 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
         appBar: PreferredSize(
             child: AppBar(
               brightness: (Platform.isIOS) ? Brightness.light : Brightness.dark,
-              backgroundColor:
-                  appColors.primaryColor,
+              backgroundColor: appColors.primaryColor,
             ),
             preferredSize: Size.fromHeight(0.0)),
         body: new GestureDetector(
@@ -670,13 +543,17 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
                   children: <Widget>[
                     Container(
                       color: appColors.appTopBgColor[100],
-                      height: appDimens.heightFullScreen()*0.5,
+                      height: appDimens.heightFullScreen() * 0.5,
                     ),
                     Center(
-                        child: ListView(shrinkWrap: true,
-                          children: <Widget>[
+                        child: ListView(
+                      shrinkWrap: true,
+                      children: <Widget>[
                         //topView,
-                        Align(child: Center(child: loginCardView),alignment: Alignment.center,),
+                        Align(
+                          child: Center(child: loginCardView),
+                          alignment: Alignment.center,
+                        ),
                         supportContact
                       ],
                     )),
@@ -687,53 +564,47 @@ class _LoginWithEmailScreen extends State<LoginWithEmailScreen>
   }
 
   //login api caling
-  loginStatusApi(String _eMail,String _ePassword) async {
+  loginStatusApi(String _eMail, String _ePassword) async {
     //Show loading
     setState(() {
       isLoading = true;
     });
     final authUserDetails =
-    await _auth.signInWithEmailAndPassword(_eMail, _ePassword);
+        await _auth.signInWithEmailAndPassword(_eMail, _ePassword);
     if (authUserDetails == null) {
       Fluttertoast.showToast(msg: "User Not availble");
-    }
-    else {
+    } else {
       final authUserDetails = await _auth.currentUser();
-      if(authUserDetails!=null){
-
+      if (authUserDetails != null) {
         String fcmToken = await _auth.getFcmToken();
 
         await _fireBaseStore.updateFireBaseToken(
-            uId: authUserDetails.documentID,
-            token: fcmToken);
+            uId: authUserDetails.uid, token: fcmToken);
 
-       var value =  await _fireBaseStore.getUserDetailsFireBase(uId: authUserDetails.documentID);
-       if(value==null){
-        String _eName =  authUserDetails.email;
-        await _fireBaseStore.addNewUserOnFireBase(
-            uId: authUserDetails.documentID,
-            nickName: _eName,
-            imageUrl:null);
-       }
-       }
-      //Move to other screen
-      moveToNextScreen(authUserDetails.documentID);
-
+        var value = await _fireBaseStore.getUserDetailsFireBase(
+            uId: authUserDetails.uid);
+        if (value == null) {
+          String _eName = authUserDetails.email;
+          await _fireBaseStore.addNewUserOnFireBase(
+              uId: authUserDetails.uid, nickName: _eName, imageUrl: null);
+        }
       }
-      setState(() {
-        isLoading = false;
-      });
-      Fluttertoast.showToast(msg: "Sign in success");
+      //Move to other screen
+      moveToNextScreen(authUserDetails.uid);
     }
+    setState(() {
+      isLoading = false;
+    });
+    Fluttertoast.showToast(msg: "Sign in success");
+  }
 
-    //Move to next screen
+  //Move to next screen
   void moveToNextScreen(String uId) {
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (BuildContext context) => InboxScreen(currentUserId: uId)),
+      MaterialPageRoute(
+          builder: (BuildContext context) => InboxScreen(currentUserId: uId)),
       ModalRoute.withName('/'),
     );
   }
-  }
-
-
+}

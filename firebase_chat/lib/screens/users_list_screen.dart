@@ -17,7 +17,9 @@ class UsersListScreen extends StatefulWidget {
   @override
   _UsersListScreen createState() => _UsersListScreen();
 }
-class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserver {
+
+class _UsersListScreen extends State<UsersListScreen>
+    with WidgetsBindingObserver {
   int followersOrFollowing = 2;
   String authorization;
   bool isLoading = false;
@@ -34,12 +36,8 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
 
   StreamController<dynamic> streamController = new StreamController();
 
-
   _UsersListScreen() {
-    appDimens.appDimensFind(context: context); //To find current screen width
-    sharedPreferencesFile
-        .readStr('chatUid')
-        .then((value) {
+    sharedPreferencesFile.readStr('chatUid').then((value) {
       if (value != null && value.trim().length > 0) {
         setState(() {
           selfUserChatId = value;
@@ -59,9 +57,7 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
     'search': new TextEditingController(),
   };
 
-  Map<String, FocusNode> focusNodes = {
-    'search': new FocusNode()
-  };
+  Map<String, FocusNode> focusNodes = {'search': new FocusNode()};
 
   Map<String, String> errorMessages = {'search': null};
 
@@ -93,7 +89,8 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
   }
 
   /*Pul To refresh*/
-  RefreshController _refreshController =  RefreshController(initialRefresh: false);
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
   /*Pul To refresh*/
   void _onRefresh() async {
     _refreshController.refreshCompleted();
@@ -103,9 +100,9 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
     if (mounted) setState(() {});
   }
 
-
   @override
   Widget build(BuildContext context) {
+    appDimens.appDimensFind(context: context); //To find current screen width
     screenSize = MediaQuery.of(context).size;
     screenHeight = screenSize.height; //Device Screen height
     screenWidth = screenSize.width; //Device Screen Width
@@ -124,8 +121,7 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
             body = CupertinoActivityIndicator();
           } else if (mode == LoadStatus.failed) {
             body = Text("Load Failed!Click retry!");
-          }
-          else {
+          } else {
             body = Text("No more Data");
           }
           return Container(
@@ -137,21 +133,18 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
       controller: _refreshController,
       onRefresh: _onRefresh,
       onLoading: _onLoading,
-      child:
-      StreamBuilder(
+      child: StreamBuilder(
         stream: FireBaseStore().getUsersListFireBase().asStream(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColors().loaderColor[300]),
-
+                valueColor:
+                    AlwaysStoppedAnimation<Color>(AppColors().loaderColor[300]),
               ),
             );
-          }
-          else {
-            if(searchInput==null) {
+          } else {
+            if (searchInput == null) {
               usersList = new List();
               usersList.addAll(snapshot.data);
 
@@ -159,24 +152,22 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
               usersDuplicateList.addAll(snapshot.data);
             }
 
-            return usersList.length>0? ListView.builder(
-              padding: EdgeInsets.fromLTRB(
-                appDimens.horizontalMarginPadding(value: 15),
-                appDimens.horizontalMarginPadding(value: 20),
-                appDimens.horizontalMarginPadding(value: 15),
-                appDimens.horizontalMarginPadding(value: 20),
-              ),
-              itemBuilder: (context, index) =>
-                  buildItemRow(context, usersList[index]),
-              itemCount: usersList.length,
-            ):
-            Center(
-                child: Text("No Users found!")
-            );
+            return usersList.length > 0
+                ? ListView.builder(
+                    padding: EdgeInsets.fromLTRB(
+                      appDimens.horizontalMarginPadding(value: 15),
+                      appDimens.horizontalMarginPadding(value: 20),
+                      appDimens.horizontalMarginPadding(value: 15),
+                      appDimens.horizontalMarginPadding(value: 20),
+                    ),
+                    itemBuilder: (context, index) =>
+                        buildItemRow(context, usersList[index]),
+                    itemCount: usersList.length,
+                  )
+                : Center(child: Text("No Users found!"));
           }
         },
       ),
-
     );
 
     //Search view
@@ -194,147 +185,137 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
               GestureDetector(
                 child: Center(
                     child: Padding(
-                      padding: EdgeInsets.only(top: 5),
-                      child: Image(
-                        image: AssetImage(
-                            "packages/firebase_chat/assets/images/search@3x.png"),
-                        width: appDimens.widthDynamic(value: 22),
-                        height: appDimens.widthDynamic(value: 22),
-                      ),
-                    )),
+                  padding: EdgeInsets.only(top: 5),
+                  child: Image(
+                    image: AssetImage(
+                        "packages/firebase_chat/assets/images/search@3x.png"),
+                    width: appDimens.widthDynamic(value: 22),
+                    height: appDimens.widthDynamic(value: 22),
+                  ),
+                )),
                 onTap: () {},
               ),
               Expanded(
                   child: Container(
-                    margin: EdgeInsets.only(
-                        left: appDimens.horizontalMarginPadding(value: 12)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      mainAxisSize: MainAxisSize.max,
-                      children: <Widget>[
-                        new Flexible(
-                          child: Padding(
-                              padding: const EdgeInsets.only(
-                                top: 4,
-                              ),
-                              child: Center(
-                                child: customView.inputFields(
-                                  keyboardType: 2,
-                                  inputAction: 1,
-                                  maxLength: 200,
-                                  readOnly: false,
-                                  //textAlign:TextAlign.center,
-                                  hint: "Search ...",
-                                  hintTextColor: appColors.editTextHintColor[100],
-                                  controller: controllers['search'],
-                                  fontSize: appDimens.fontSize(value: 16),
-                                  cursorColor: appColors.editCursorColor[200],
-                                  ontextChanged: (value) {
-                                    if (value != null) {
-                                      searchInput = value.trim().trim();
-                                      filterSearchResults(
-                                          query: searchInput);
-                                    } else {
-                                      searchInput = null;
-                                      filterSearchResults(
-                                          query: searchInput);
-                                    }
-                                  },
-                                  onSubmit: (value) {
-                                    if (value != null) {
-                                      searchInput = value.trim().trim();
-                                      filterSearchResults(
-                                          query: searchInput);
-                                    } else {
-                                      searchInput = null;
-                                      filterSearchResults(
-                                          query: searchInput);
-                                    }
-                                  },
-                                ),
-                              )),
-                        ),
-                      ],
+                margin: EdgeInsets.only(
+                    left: appDimens.horizontalMarginPadding(value: 12)),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    new Flexible(
+                      child: Padding(
+                          padding: const EdgeInsets.only(
+                            top: 4,
+                          ),
+                          child: Center(
+                            child: customView.inputFields(
+                              keyboardType: 2,
+                              inputAction: 1,
+                              maxLength: 200,
+                              readOnly: false,
+                              //textAlign:TextAlign.center,
+                              hint: "Search ...",
+                              hintTextColor: appColors.editTextHintColor[100],
+                              controller: controllers['search'],
+                              fontSize: appDimens.fontSize(value: 16),
+                              cursorColor: appColors.editCursorColor[200],
+                              ontextChanged: (value) {
+                                if (value != null) {
+                                  searchInput = value.trim().trim();
+                                  filterSearchResults(query: searchInput);
+                                } else {
+                                  searchInput = null;
+                                  filterSearchResults(query: searchInput);
+                                }
+                              },
+                              onSubmit: (value) {
+                                if (value != null) {
+                                  searchInput = value.trim().trim();
+                                  filterSearchResults(query: searchInput);
+                                } else {
+                                  searchInput = null;
+                                  filterSearchResults(query: searchInput);
+                                }
+                              },
+                            ),
+                          )),
                     ),
-                  ))
+                  ],
+                ),
+              ))
             ],
           ),
         ));
 
     //App bar
-    Widget appBar =  appBarBackArrowWithTitleAndSubTitle.appBarWithLeftRightIconTitleSubtitle(
-        statusbarHeight:MediaQuery.of(context).padding.top,
-        back:true,
-        title: "Users",
-        appBarBgColor: appColors.appBarBgColor,
-        titleColor:
-        appColors.appBarTextColor[600],
-        titleFontSize:
-        appDimens.fontSize(value: 20),
-        rightIcon: null,
-        rightIconSize:
-        appDimens.widthDynamic(value: 22),
-        leftIconSize:
-        appDimens.widthDynamic(value: 20),
-        onPressed: () {
-          Navigator.pop(context);
-        },
-        onRightIconPressed: () {
-
-        });
+    Widget appBar = appBarBackArrowWithTitleAndSubTitle
+        .appBarWithLeftRightIconTitleSubtitle(
+            statusbarHeight: MediaQuery.of(context).padding.top,
+            back: true,
+            title: "Users",
+            appBarBgColor: appColors.appBarBgColor,
+            titleColor: appColors.appBarTextColor[600],
+            titleFontSize: appDimens.fontSize(value: 20),
+            rightIcon: null,
+            rightIconSize: appDimens.widthDynamic(value: 22),
+            leftIconSize: appDimens.widthDynamic(value: 20),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            onRightIconPressed: () {});
 
     Future<bool> onBackPress() async {
       exit(0);
       return Future.value(true);
     }
+
     /*==================== Main view ======================*/
-    return
-      WillPopScope(
-        child:
-        Container(
-            color: appColors.appBgColor[200],
-            child:  SafeArea(
-                child:new Scaffold(
-                  appBar: appBar,
-                  body: Container(
-                      padding: EdgeInsets.only(
-                        left: appDimens.widthDynamic(value: 20),
-                        right: appDimens.widthDynamic(value: 20),
-                        //bottom: 0.2
-                      ),
-                      color: appColors.appBgColor[400],
-                      child: Stack(
-                        children: <Widget>[
-                          Container(
-                              margin: EdgeInsets.only(
-                                  top: appDimens.verticalMarginPadding(value: 0)),
-                              child:searchField),
-                          // List
-                          Container(
-                              margin: EdgeInsets.only(
-                                  top: appDimens.verticalMarginPadding(value: appDimens.heightDynamic(value: 55))),
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: appColors.white,
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(8.0),
-                                    topRight: Radius.circular(8.0),
-                                  ),
-                                ),
-                                child: centerItemsViewPull1,
-                              )),
-                        ],
-                      )),
-                ))),
-        onWillPop: onBackPress,
-      );
+    return WillPopScope(
+      child: Container(
+          color: appColors.appBgColor[200],
+          child: SafeArea(
+              child: new Scaffold(
+            appBar: appBar,
+            body: Container(
+                padding: EdgeInsets.only(
+                  left: appDimens.widthDynamic(value: 20),
+                  right: appDimens.widthDynamic(value: 20),
+                  //bottom: 0.2
+                ),
+                color: appColors.appBgColor[400],
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                        margin: EdgeInsets.only(
+                            top: appDimens.verticalMarginPadding(value: 0)),
+                        child: searchField),
+                    // List
+                    Container(
+                        margin: EdgeInsets.only(
+                            top: appDimens.verticalMarginPadding(
+                                value: appDimens.heightDynamic(value: 55))),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: appColors.white,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0),
+                            ),
+                          ),
+                          child: centerItemsViewPull1,
+                        )),
+                  ],
+                )),
+          ))),
+      onWillPop: onBackPress,
+    );
   }
 
   Widget buildItemRow(BuildContext context, document) {
     if (document == null) {
       return Container();
-    }
-    else {
+    } else {
       String time = "", alumniName = "", message = "", profileImage;
       String otherUid;
       try {
@@ -342,137 +323,135 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
         alumniName = document['nickName'];
         profileImage = document['imageUrl'];
         otherUid = document['id'];
-      }
-      catch (e) {
+      } catch (e) {
         print(e);
       }
-      return
-        (selfUserChatId!=null && otherUid!=null && selfUserChatId!=otherUid)?
-        Container(
-          child: FlatButton(
-            child: Row(
-              children: <Widget>[
-                //User image
-                Container(
-                    child: customView.circularImageOrNameView(
-                        appDimens.imageSquareAccordingScreen(value: 44),
-                        appDimens.imageSquareAccordingScreen(value: 44),
-                        profileImage,
-                        alumniName)),
+      return (selfUserChatId != null &&
+              otherUid != null &&
+              selfUserChatId != otherUid)
+          ? Container(
+              child: FlatButton(
+                child: Row(
+                  children: <Widget>[
+                    //User image
+                    Container(
+                        child: customView.circularImageOrNameView(
+                            appDimens.imageSquareAccordingScreen(value: 44),
+                            appDimens.imageSquareAccordingScreen(value: 44),
+                            profileImage,
+                            alumniName)),
 
-                //Center text
-                Flexible(
-                  // flex: 2,
-                  child: Container(
-                    // color: Colors.green,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Container(
-                          child: Text(
-                            alumniName ?? "",
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily:
-                              appFonts.defaultFont,
-                              fontSize: appDimens.fontSize(value: 18),
-                              color: appColors.textHeadingColor[100],
-                            ),
-                            maxLines: 1,
-                          ),
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-                        ),
-                        Container(
-                          child: Text('$message',
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
+                    //Center text
+                    Flexible(
+                      // flex: 2,
+                      child: Container(
+                        // color: Colors.green,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              child: Text(
+                                alumniName ?? "",
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
                                   fontFamily: appFonts.defaultFont,
-                                  fontSize: appDimens
-                                      .fontSize(value: 12),
-                                  fontWeight: FontWeight.w400,
-                                  color: AppColors().textNormalColor[300]),
-                              maxLines: 1),
-                          alignment: Alignment.centerLeft,
-                          margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
-                        )
-                      ],
-                    ),
-                    margin: EdgeInsets.only(left: 2.0),
-                  ),
-                ),
-                Expanded(
-                    child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Container(
-                          //color: Colors.red,
-                          //width: 70,
-                          child:
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: <Widget>[
-                              Container(
-                                width: 65,
-                                child: Padding(
-                                    padding: EdgeInsets.only(left: 2),
-                                    child: Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        time != null ? "$time" : "",
-                                        //"12:30 dhjgh hd hu u h",
-                                        style: TextStyle(
-                                          fontFamily: appFonts.defaultFont,
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: appDimens
-                                              .fontSize(value: 12),
-                                          color: AppColors().textNormalColor[300],
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )),
+                                  fontSize: appDimens.fontSize(value: 18),
+                                  color: appColors.textHeadingColor[100],
+                                ),
+                                maxLines: 1,
                               ),
-                            ],
-                          ),
-                        )))
-              ],
-            ),
-            onPressed: () {
-              if (otherUid != null && otherUid.toString().length > 0) {
-                Navigator.pop(context);
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            OneToOneChatScreen(
-                              peerId: otherUid,
-                              name: alumniName != null ? alumniName : "",
-                              peerAvatar: profileImage,
-                              isGroupChat: false,
-                            )));
-              }
-            },
-            color: appColors.listRowBgColor[700],
-            padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 22.0),
-          ),
-          margin: EdgeInsets.only(bottom: 0, left: 0.0, right: 5.0),
-        ):Container();
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                            ),
+                            Container(
+                              child: Text('$message',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontFamily: appFonts.defaultFont,
+                                      fontSize: appDimens.fontSize(value: 12),
+                                      fontWeight: FontWeight.w400,
+                                      color: AppColors().textNormalColor[300]),
+                                  maxLines: 1),
+                              alignment: Alignment.centerLeft,
+                              margin: EdgeInsets.fromLTRB(10.0, 0.0, 0.0, 0.0),
+                            )
+                          ],
+                        ),
+                        margin: EdgeInsets.only(left: 2.0),
+                      ),
+                    ),
+                    Expanded(
+                        child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Container(
+                              //color: Colors.red,
+                              //width: 70,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Container(
+                                    width: 65,
+                                    child: Padding(
+                                        padding: EdgeInsets.only(left: 2),
+                                        child: Align(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            time != null ? "$time" : "",
+                                            //"12:30 dhjgh hd hu u h",
+                                            style: TextStyle(
+                                              fontFamily: appFonts.defaultFont,
+                                              fontWeight: FontWeight.w400,
+                                              fontSize:
+                                                  appDimens.fontSize(value: 12),
+                                              color: AppColors()
+                                                  .textNormalColor[300],
+                                            ),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            )))
+                  ],
+                ),
+                onPressed: () {
+                  if (otherUid != null && otherUid.toString().length > 0) {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => OneToOneChatScreen(
+                                  peerId: otherUid,
+                                  name: alumniName != null ? alumniName : "",
+                                  peerAvatar: profileImage,
+                                  isGroupChat: false,
+                                )));
+                  }
+                },
+                color: appColors.listRowBgColor[700],
+                padding: EdgeInsets.fromLTRB(0.0, 0.0, 0.0, 22.0),
+              ),
+              margin: EdgeInsets.only(bottom: 0, left: 0.0, right: 5.0),
+            )
+          : Container();
     }
   }
 
-
   //Function for search
-  void filterSearchResults({Key key, String query, List<dynamic> selectedFilter}) {
+  void filterSearchResults(
+      {Key key, String query, List<dynamic> selectedFilter}) {
     List<dynamic> alumniListForSearch = List<dynamic>();
     alumniListForSearch.addAll(usersDuplicateList);
     if (query != null && query.isNotEmpty && query != "") {
       List<dynamic> dummyListData = List<dynamic>();
       alumniListForSearch.forEach((item) {
         if (item["nickName"]
-            .toString()
-            .trim()
-            .toLowerCase()
-            .contains(query.trim().toLowerCase()) ||
+                .toString()
+                .trim()
+                .toLowerCase()
+                .contains(query.trim().toLowerCase()) ||
             item["lastName"]
                 .toString()
                 .trim()
@@ -491,9 +470,7 @@ class _UsersListScreen extends State<UsersListScreen> with WidgetsBindingObserve
         usersList.clear();
         usersList.addAll(dummyListData);
       });
-      //return;
-    }
-    else {
+    } else {
       //Apply filter
       setState(() {
         usersList.clear();

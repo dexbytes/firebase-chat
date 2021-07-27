@@ -1,5 +1,5 @@
-class User {
-  User({
+class UserProfileDetails {
+  UserProfileDetails({
     this.documentID,
     this.firstName,
     this.lastName,
@@ -31,7 +31,7 @@ class User {
   int numOfUnreadMessages = 0;
   List<String> reviewedProducts = new List<String>();
 
-  factory User.fromMap(Map<String, dynamic> data) {
+  factory UserProfileDetails.fromMap(Map<String, dynamic> data) {
     if (data == null) {
       return null;
     }
@@ -51,7 +51,7 @@ class User {
     final int numOfUnreadMessages = data['numOfUnreadMessages'];
     final List<String> reviewedProducts = List.from(data['reviewedProducts']);
 
-    return User(
+    return UserProfileDetails(
       documentID: documentID,
       firstName: firstName,
       lastName: lastName,

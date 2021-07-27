@@ -9,7 +9,7 @@ import 'package:firebase_chat/chat_p/utils_p/app_string.dart';
 import 'package:firebase_chat/chat_p/utils_p/custome_view.dart';
 import 'package:firebase_chat/chat_p/utils_p/validation.dart';
 import 'package:firebase_chat/firebse_chat_main.dart';
-import 'package:firebase_chat/screens/inbox_p/models/user.dart';
+import 'package:firebase_chat/screens/inbox_p/models/user_profile_details.dart';
 import 'package:firebase_chat/screens/inbox_screen.dart';
 import 'package:firebase_chat/screens/login_with_email_screen.dart';
 import 'package:flutter/material.dart';
@@ -668,7 +668,7 @@ class _RegisterWithEmailScreen extends State<RegisterWithEmailScreen>
     _auth = new Auth();
     _fireBaseStore = new FireBaseStore();
 
-    User mUser = User(
+    UserProfileDetails mUser = UserProfileDetails(
       email: _eMail
     );
 
@@ -683,15 +683,15 @@ class _RegisterWithEmailScreen extends State<RegisterWithEmailScreen>
         String fcmToken = await _auth.getFcmToken();
 
         await _fireBaseStore.addNewUserOnFireBase(
-            uId: authUserDetails.documentID,
+            uId: authUserDetails.uid,
             nickName: _eName,
             imageUrl:null);
 
         await _fireBaseStore.updateFireBaseToken(
-            uId: authUserDetails.documentID,
+            uId: authUserDetails.uid,
             token: fcmToken);
 
-        moveToNextScreen(authUserDetails.documentID);
+        moveToNextScreen(authUserDetails.uid);
       }
       setState(() {
         isLoading = false;

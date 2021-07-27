@@ -7,6 +7,7 @@ import 'package:firebase_chat/chat_p/utils_p/custome_view.dart';
 import 'package:flutter/material.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
+
 var screenSize, screenHeight, screenWidth;
 
 File croppedFile;
@@ -33,13 +34,13 @@ class TakePhotoWithCrop extends StatelessWidget {
   //BottomSheet for take media
   Future takeMediaBottomSheet(
       {Key key,
-        int ratio,
-        bool lockAspectRatio,
-        isCroupViewShow,
-        callBackIsCroupView,
-        callBack,
-        hardBackPress,
-        backPress}) {
+      int ratio,
+      bool lockAspectRatio,
+      isCroupViewShow,
+      callBackIsCroupView,
+      callBack,
+      hardBackPress,
+      backPress}) {
     lockAspectRatio = true;
     isCroupViewShow = false;
     callBack = callBack;
@@ -121,15 +122,23 @@ class TakePhotoWithCrop extends StatelessWidget {
 
     Future openCamera() async {
       Navigator.pop(context, true);
-      imageFile = await ImagePicker.pickImage(source: ImageSource.camera);
-      if (imageFile != null) _cropImage(imageFile);
+      PickedFile imageFileTemp =
+          await ImagePicker.platform.pickImage(source: ImageSource.camera);
+      if (imageFileTemp != null) {
+        imageFile = File(imageFileTemp.path);
+        _cropImage(imageFile);
+      }
     }
 
     Future openGallery() async {
       //ttt = 0;
       // callBackIsCroupView();
-      imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
-      if (imageFile != null) {
+      // imageFile = await ImagePicker.pickImage(source: ImageSource.gallery);
+      PickedFile imageFileTemp =
+          await ImagePicker.platform.pickImage(source: ImageSource.gallery);
+      if (imageFileTemp != null) {
+        imageFile = File(imageFileTemp.path);
+        // if (imageFile != null) {
         _cropImage(imageFile);
         Navigator.pop(context, true);
       }
@@ -149,7 +158,7 @@ class TakePhotoWithCrop extends StatelessWidget {
               children: <Widget>[
                 Container(
                   padding: EdgeInsets.only(
-                    //top: AppValuesFilesLink().appValuesDimens.verticalMarginPadding(value: 15),
+                      //top: AppValuesFilesLink().appValuesDimens.verticalMarginPadding(value: 15),
                       bottom: appDimens.verticalMarginPadding(value: 12)),
                   child: Align(
                     alignment: Alignment.topCenter,
@@ -167,7 +176,7 @@ class TakePhotoWithCrop extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.center,
                       child: Container(
-                        child:customView.buttonRoundCornerWithBg(
+                        child: customView.buttonRoundCornerWithBg(
                             "Choose from Library",
                             appColors.textNormalColor[600],
 
@@ -199,14 +208,14 @@ class TakePhotoWithCrop extends StatelessWidget {
                     )),
                 Container(
                   margin: EdgeInsets.only(
-                      top:appDimens.verticalMarginPadding(value: 20)),
+                      top: appDimens.verticalMarginPadding(value: 20)),
                   child: GestureDetector(
                       child: Align(
                         alignment: Alignment.topCenter,
                         child: Text(
                           appString.buttonCancel,
                           style: TextStyle(
-                              fontFamily:appFonts.defaultFont,
+                              fontFamily: appFonts.defaultFont,
                               fontSize: screenWidth / 18,
 //                            fontWeight: FontWeight.w400,
                               color: appColors.textNormalColor[400]),
@@ -227,7 +236,7 @@ class TakePhotoWithCrop extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(
                 top: appDimens.verticalMarginPadding(value: 15),
-                bottom:appDimens.verticalMarginPadding(value: 15)),
+                bottom: appDimens.verticalMarginPadding(value: 15)),
             child: Align(
               alignment: Alignment.topCenter,
               child: GestureDetector(
@@ -245,7 +254,7 @@ class TakePhotoWithCrop extends StatelessWidget {
                     fontFamily: appFonts.defaultFont,
                     fontSize: screenWidth / 18,
 //                                    fontWeight: FontWeight.w400,
-                    color:appColors.textHeadingColor),
+                    color: appColors.textHeadingColor),
               ),
             ),
             margin: EdgeInsets.only(bottom: screenHeight / 20),
@@ -291,8 +300,7 @@ class TakePhotoWithCrop extends StatelessWidget {
                 child: Text(
                   appString.buttonCancel,
                   style: TextStyle(
-                      fontFamily:
-                      appFonts.defaultFont,
+                      fontFamily: appFonts.defaultFont,
                       fontSize: screenWidth / 18,
 //                            fontWeight: FontWeight.w400,
                       color: appColors.textNormalColor[400]),
@@ -329,7 +337,7 @@ class TakePhotoWithCrop extends StatelessWidget {
                   children: <Widget>[
                     Container(
                       padding: EdgeInsets.only(
-                          left:  appDimens.verticalMarginPadding(value: 25),
+                          left: appDimens.verticalMarginPadding(value: 25),
                           right: appDimens.verticalMarginPadding(value: 25),
                           top: 0,
                           bottom: 0),

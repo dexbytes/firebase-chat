@@ -1,7 +1,15 @@
+import 'package:firebase_analytics/observer.dart';
 import 'package:firebase_chat/firebse_chat_main.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 
-void main() => runApp(MyApp());
+import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -23,11 +31,12 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       home: FireBaseChat(context: context).initChatModule(context),
+      // home: MyHomePage(title: "Home"),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+/*class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -47,6 +56,9 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  static FirebaseAnalytics analytics = FirebaseAnalytics();
+  static FirebaseAnalyticsObserver observer =
+  FirebaseAnalyticsObserver(analytics: analytics);
 
   void _incrementCounter() {
     setState(() {
@@ -56,7 +68,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
       _counter++;
+      _sendAnalyticsEvent(_counter);
     });
+  }
+
+  Future<void> _sendAnalyticsEvent(counter) async {
+    print("Success init *** $counter");
+    await analytics.logEvent(
+      name: 'Count_event',
+      parameters: <String, dynamic>{
+        'string': 'string',
+        'clickCount': counter,
+        'bool': true,
+      },
+    );
+    print("Success $counter");
+   // setMessage('logEvent succeeded');
   }
 
   @override
@@ -110,4 +137,4 @@ class _MyHomePageState extends State<MyHomePage> {
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
-}
+}*/

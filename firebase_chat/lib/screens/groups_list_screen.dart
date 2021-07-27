@@ -18,7 +18,6 @@ import 'package:firebase_chat/firebse_chat_main.dart';
 import 'package:firebase_chat/screens/group_channel_information.dart';
 import 'package:firebase_chat/screens/group_chat_screen.dart';
 import 'package:firebase_chat/screens/inbox_p/models/group.dart';
-import 'package:firebase_chat/screens/inbox_p/models/user.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -53,14 +52,12 @@ class _GroupsListScreen extends State<GroupsListScreen>
   int isCameraPopUpOpen = 0;
   double groupImageHeight = 100;
   double groupImageWidth = 100;
-  int groupType = 0;  //0 = public , 1 = privet
+  int groupType = 0; //0 = public , 1 = privet
 
   _GroupsListScreen(
       {Key key, this.isAllGroups, @required this.selectedUChatId}) {
     try {
-      sharedPreferencesFile
-          .readStr(chatUid)
-          .then((value) {
+      sharedPreferencesFile.readStr(chatUid).then((value) {
         if (value != null) {
           setState(() {
             currentLoggedInChatUid = value;
@@ -76,9 +73,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
     if (this.selectedUChatId != null) {
       uId = this.selectedUChatId;
     } else {
-      sharedPreferencesFile
-          .readStr("chatUid")
-          .then((value) {
+      sharedPreferencesFile.readStr("chatUid").then((value) {
         if (value != null && value != '') {
           setState(() {
             uId = value;
@@ -106,7 +101,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
 
   bool isRefreshScreenData = false;
 
-  final FirebaseMessaging firebaseMessaging = new FirebaseMessaging();
+  final FirebaseMessaging firebaseMessaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       new FlutterLocalNotificationsPlugin();
   final GoogleSignIn googleSignIn = GoogleSignIn();
@@ -153,10 +148,8 @@ class _GroupsListScreen extends State<GroupsListScreen>
                         appString.confirmationDeleteGroupMessage,
                         style: TextStyle(
                             fontSize: appDimens.fontSize(value: 16),
-                            fontFamily:
-                                appFonts.defaultFont,
-                            color: appColors
-                                .textNormalColor),
+                            fontFamily: appFonts.defaultFont,
+                            color: appColors.textNormalColor),
                       ),
                     ),
 
@@ -171,24 +164,25 @@ class _GroupsListScreen extends State<GroupsListScreen>
                                 isSubLoading
                                     ? Container(
                                         child: CircularProgressIndicator(
-                                          valueColor: new AlwaysStoppedAnimation<Color>(
-                                              appColors.loaderColor[300]),
+                                          valueColor:
+                                              new AlwaysStoppedAnimation<Color>(
+                                                  appColors.loaderColor[300]),
                                         ),
                                         margin: EdgeInsets.only(bottom: 10),
                                       )
                                     : customView.buttonRoundCornerWithBg(
-                                            appString.buttonConfirm,
-                                            appColors
-                                                .buttonTextColor,
-                                            appColors
-                                                .buttonBgColor[100],
-                                            appDimens.fontSize(value: 18),
-                                            2, (value) async {
+                                        appString.buttonConfirm,
+                                        appColors.buttonTextColor,
+                                        appColors.buttonBgColor[100],
+                                        appDimens.fontSize(value: 18),
+                                        2, (value) async {
                                         FocusScope.of(context)
                                             .requestFocus(new FocusNode());
                                         Navigator.pop(context);
-                                        await _firebaseStore.deleteChatGroupFireBase(groupId:
-                                            _selectedChoice.mChatGroups.gId);
+                                        await _firebaseStore
+                                            .deleteChatGroupFireBase(
+                                                groupId: _selectedChoice
+                                                    .mChatGroups.gId);
                                       })
                               ],
                             ))),
@@ -212,8 +206,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
                               style: TextStyle(
                                   fontSize: appDimens.fontSize(value: 20),
                                   fontFamily: appFonts.defaultFont,
-                                  color: appColors
-                                      .textNormalColor),
+                                  color: appColors.textNormalColor),
                             ),
                           )),
                     )
@@ -247,10 +240,8 @@ class _GroupsListScreen extends State<GroupsListScreen>
                         appString.confirmationLeftGroupMessage,
                         style: TextStyle(
                             fontSize: appDimens.fontSize(value: 16),
-                            fontFamily:
-                                appFonts.defaultFont,
-                            color: appColors
-                                .textNormalColor),
+                            fontFamily: appFonts.defaultFont,
+                            color: appColors.textNormalColor),
                       ),
                     ),
 
@@ -264,19 +255,18 @@ class _GroupsListScreen extends State<GroupsListScreen>
                                 isSubLoading
                                     ? Container(
                                         child: CircularProgressIndicator(
-                                          valueColor: new AlwaysStoppedAnimation<Color>(
-                                              appColors.loaderColor[300]),
+                                          valueColor:
+                                              new AlwaysStoppedAnimation<Color>(
+                                                  appColors.loaderColor[300]),
                                         ),
                                         margin: EdgeInsets.only(bottom: 10),
                                       )
                                     : customView.buttonRoundCornerWithBg(
-                                            appString.buttonConfirm,
-                                            appColors
-                                                .buttonTextColor,
-                                            appColors
-                                                .buttonBgColor[100],
-                                            appDimens.fontSize(value: 18),
-                                            2, (value) async {
+                                        appString.buttonConfirm,
+                                        appColors.buttonTextColor,
+                                        appColors.buttonBgColor[100],
+                                        appDimens.fontSize(value: 18),
+                                        2, (value) async {
                                         FocusScope.of(context)
                                             .requestFocus(new FocusNode());
                                         Navigator.pop(context);
@@ -303,9 +293,8 @@ class _GroupsListScreen extends State<GroupsListScreen>
                               "Cancel",
                               style: TextStyle(
                                   fontSize: appDimens.fontSize(value: 20),
-                                  fontFamily:appFonts.defaultFont,
-                                  color: appColors
-                                      .textNormalColor),
+                                  fontFamily: appFonts.defaultFont,
+                                  color: appColors.textNormalColor),
                             ),
                           )),
                     )
@@ -405,12 +394,13 @@ class _GroupsListScreen extends State<GroupsListScreen>
       'your channel description',
       playSound: true,
       enableVibration: true,
-      importance: Importance.Max,
-      priority: Priority.High,
+      importance: Importance.max,
+      priority: Priority.high,
     );
     var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
     var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
     await flutterLocalNotificationsPlugin.show(0, message['title'].toString(),
         message['body'].toString(), platformChannelSpecifics,
         payload: json.encode(message));
@@ -501,65 +491,59 @@ class _GroupsListScreen extends State<GroupsListScreen>
                   child: Text(
                     "Group Name",
                     style: TextStyle(
-                        fontFamily:
-                            appFonts.defaultFont,
+                        fontFamily: appFonts.defaultFont,
                         fontSize: appDimens.fontSize(value: 16),
-                        color: appColors
-                            .textNormalColor[400]),
+                        color: appColors.textNormalColor[400]),
                   ),
                 ),
                 Padding(
                   padding: EdgeInsets.only(
                       top: appDimens.verticalMarginPadding(value: 13)),
                   child: customView.inputFields(
-                        keyboardType: nameInputC,
-                        inputAction: nextC,
-                        maxLength: nameInputMaxLenthC,
-                        readOnly: false,
-                        padding: EdgeInsets.all(appDimens.horizontalMarginPadding(value: 16)),
-                        focusNode: null,
-                        controller: controllers['name'],
-                        hint: "Name",
-                        fontSize: appDimens.fontSize(value: 18),
-                        error: errorMessages['name'],
-                        borderColor: appColors
-                            .editTextBorderColor[100],
-                        enabledBorder: appColors
-                            .editTextEnabledBorderColor[100],
-                        fillColor: appColors
-                            .editTextBgColor[100],
-                        focusedBorderColor: appColors
-                            .editTextFocusedBorderColor[100],
-                        cursorColor: appColors
-                            .editCursorColor[200],
-                        hintTextColor: appColors
-                            .editTextHintColor[100],
-                        ontextChanged: (value) {
+                    keyboardType: nameInputC,
+                    inputAction: nextC,
+                    maxLength: nameInputMaxLenthC,
+                    readOnly: false,
+                    padding: EdgeInsets.all(
+                        appDimens.horizontalMarginPadding(value: 16)),
+                    focusNode: null,
+                    controller: controllers['name'],
+                    hint: "Name",
+                    fontSize: appDimens.fontSize(value: 18),
+                    error: errorMessages['name'],
+                    borderColor: appColors.editTextBorderColor[100],
+                    enabledBorder: appColors.editTextEnabledBorderColor[100],
+                    fillColor: appColors.editTextBgColor[100],
+                    focusedBorderColor:
+                        appColors.editTextFocusedBorderColor[100],
+                    cursorColor: appColors.editCursorColor[200],
+                    hintTextColor: appColors.editTextHintColor[100],
+                    ontextChanged: (value) {
+                      isReadyToClick = false;
+                      if (validation.isNotEmpty(value)) {
+                        print(value);
+                        setState(() {
+                          errorMessages['name'] = null;
+                          isReadyToClick = true;
+                        });
+                      } else {
+                        setState(() {
+                          errorMessages['name'] = appString.groupNameNotBlank;
                           isReadyToClick = false;
-                          if (validation.isNotEmpty(value)) {
-                            print(value);
-                            setState(() {
-                              errorMessages['name'] = null;
-                              isReadyToClick = true;
-                            });
-                          } else {
-                            setState(() {
-                              errorMessages['name'] = appString.groupNameNotBlank;
-                              isReadyToClick = false;
-                            });
-                          }
-                        },
-                        onSubmit: (value) {
-                          FocusScope.of(context)
-                              .requestFocus(focusNodes['subHeader']);
-                          setState(() {
-                            controllers['name'].text = value;
-                          });
-                        },
-                      ),
+                        });
+                      }
+                    },
+                    onSubmit: (value) {
+                      FocusScope.of(context)
+                          .requestFocus(focusNodes['subHeader']);
+                      setState(() {
+                        controllers['name'].text = value;
+                      });
+                    },
+                  ),
                 ),
 
-                 /* Padding(
+                /* Padding(
                   padding: EdgeInsets.only(
                       top: appDimens.verticalMarginPadding(value: 20)),
                   child: Text(
@@ -672,10 +656,9 @@ class _GroupsListScreen extends State<GroupsListScreen>
                         : appDimens.widthFullScreen(),
                     margin: EdgeInsets.only(
                         top: appDimens.verticalMarginPadding(
-                                value: (imagePath != null &&
-                                        imagePath.trim() != "")
-                                    ? 0
-                                    : 20)),
+                            value: (imagePath != null && imagePath.trim() != "")
+                                ? 0
+                                : 20)),
                     child: Align(
                         alignment: Alignment.center,
                         child: Stack(
@@ -685,18 +668,19 @@ class _GroupsListScreen extends State<GroupsListScreen>
                                     child: selectedGroupImageView(imagePath),
                                   )
                                 : Container(
-                                    child: customView.buttonRoundCornerWithBgAndLeftImage(
+                                    child: customView
+                                        .buttonRoundCornerWithBgAndLeftImage(
                                             "Choose a group Picture",
                                             'packages/firebase_chat/assets/camera.png',
-                                            appDimens.imageSquareAccordingScreen(
+                                            appDimens
+                                                .imageSquareAccordingScreen(
                                                     value: 22),
-                                            appDimens.imageSquareAccordingScreen(
+                                            appDimens
+                                                .imageSquareAccordingScreen(
                                                     value: 22),
-                                            appColors
-                                                .textNormalColor[600],
+                                            appColors.textNormalColor[600],
                                             //(isEmailOk && agree)?
-                                            appColors
-                                                .buttonBgColor[300],
+                                            appColors.buttonBgColor[300],
                                             appDimens.fontSize(value: 18),
                                             2, (value) async {
                                       if (!isSubLoading) {
@@ -749,28 +733,25 @@ class _GroupsListScreen extends State<GroupsListScreen>
                             isSubLoading
                                 ? Container(
                                     child: CircularProgressIndicator(
-                                      valueColor: new AlwaysStoppedAnimation<Color>(
-                                          appColors.loaderColor[300]),
+                                      valueColor:
+                                          new AlwaysStoppedAnimation<Color>(
+                                              appColors.loaderColor[300]),
                                     ),
                                     margin: EdgeInsets.only(bottom: 10),
                                   )
                                 : customView.buttonRoundCornerWithBg(
-                                        createLble,
-                                        isReadyToClick
-                                            ? appColors
-                                                .buttonTextColor
-                                            : appColors
-                                                .buttonTextColor[100],
-                                        //(isEmailOk && agree)?
-                                        isReadyToClick
-                                            ? appColors
-                                                .buttonBgColor[100]
-                                            : appColors
-                                                .appDisabledColor[100]
-                                        //:appColors.appDisabledColor[100]
-                                        ,
-                                        appDimens.fontSize(value: 18),
-                                        2, (value) async {
+                                    createLble,
+                                    isReadyToClick
+                                        ? appColors.buttonTextColor
+                                        : appColors.buttonTextColor[100],
+                                    //(isEmailOk && agree)?
+                                    isReadyToClick
+                                        ? appColors.buttonBgColor[100]
+                                        : appColors.appDisabledColor[100]
+                                    //:appColors.appDisabledColor[100]
+                                    ,
+                                    appDimens.fontSize(value: 18),
+                                    2, (value) async {
                                     if (isReadyToClick) {
                                       customView.hideKeyboard(context);
                                       submitGroupDetails();
@@ -797,9 +778,8 @@ class _GroupsListScreen extends State<GroupsListScreen>
                           appString.buttonCancel,
                           style: TextStyle(
                               fontSize: appDimens.fontSize(value: 20),
-                              fontFamily:appFonts.defaultFont,
-                              color: appColors
-                                  .textNormalColor[400]),
+                              fontFamily: appFonts.defaultFont,
+                              color: appColors.textNormalColor[400]),
                         ),
                       )),
                 ),
@@ -813,22 +793,23 @@ class _GroupsListScreen extends State<GroupsListScreen>
     statusBarHeight = MediaQuery.of(context).padding.top;
     //App bar
     Widget appBar = Container(
-      // color:   Colors.red,
-      height: appDimens.heightDynamic(
-        value: 77 - statusBarHeight,
-      ),
-      child:appBarBackArrowWithTitleAndSubTitle.appBarWithLeftRightIconTitleSubtitle(
-      statusbarHeight:MediaQuery.of(context).padding.top,
-      title: "Group",
-      back: true,
-      appBarBgColor: appColors.appBarBgColor,
-      titleColor: appColors.appBarTextColor[600],
-      titleFontSize: appDimens.fontSize(value: 20),
-      leftIconSize: appDimens.widthDynamic(value: 20),
-      onPressed: (){
-        Navigator.pop(context);
-      },
-    ));
+        // color:   Colors.red,
+        height: appDimens.heightDynamic(
+          value: 77 - statusBarHeight,
+        ),
+        child: appBarBackArrowWithTitleAndSubTitle
+            .appBarWithLeftRightIconTitleSubtitle(
+          statusbarHeight: MediaQuery.of(context).padding.top,
+          title: "Group",
+          back: true,
+          appBarBgColor: appColors.appBarBgColor,
+          titleColor: appColors.appBarTextColor[600],
+          titleFontSize: appDimens.fontSize(value: 20),
+          leftIconSize: appDimens.widthDynamic(value: 20),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ));
 
     /*==================== Main view =========================*/
     return WillPopScope(
@@ -844,24 +825,26 @@ class _GroupsListScreen extends State<GroupsListScreen>
                       Container(
                         margin: EdgeInsets.only(
                             top: appDimens.heightDynamic(
-                                  value: 90 - statusBarHeight,
-                                ),
+                              value: 90 - statusBarHeight,
+                            ),
                             bottom: isAllGroups
                                 ? appDimens.verticalMarginPadding(value: 45)
                                 : (isSelfGroupsChannel
                                     ? appDimens.verticalMarginPadding(value: 45)
-                                    : appDimens.verticalMarginPadding(value: 5))),
+                                    : appDimens.verticalMarginPadding(
+                                        value: 5))),
                         padding: EdgeInsets.only(
                             bottom: isAllGroups
                                 ? appDimens.verticalMarginPadding(value: 35)
                                 : (isSelfGroupsChannel
                                     ? appDimens.verticalMarginPadding(value: 35)
-                                    : appDimens.verticalMarginPadding(value: 5))),
-                        child:
-                        Container(
+                                    : appDimens.verticalMarginPadding(
+                                        value: 5))),
+                        child: Container(
                           /*color: Colors.green,*/
                           child: StreamBuilder(
-                            stream: _firebaseStore.getGroupsFireBase(uId: uId, isAll: isAllGroups)
+                            stream: _firebaseStore
+                                .getGroupsFireBase(uId: uId, isAll: isAllGroups)
                                 .asStream(),
                             builder: (context, snapshot) {
                               if (!snapshot.hasData) {
@@ -871,8 +854,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
                                         child: CircularProgressIndicator(
                                           valueColor:
                                               AlwaysStoppedAnimation<Color>(
-                                                  appColors
-                                                      .loaderColor[300]),
+                                                  appColors.loaderColor[300]),
                                         ),
                                       )
                                     : Center(child: Text("No Groups Found!"));
@@ -884,7 +866,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
                                     ? ListView.builder(
                                         padding: EdgeInsets.all(
                                             appDimens.horizontalMarginPadding(
-                                                    value: 20)),
+                                                value: 20)),
                                         itemBuilder: (context, index) =>
                                             buildItem(
                                                 context, snapshot.data[index]),
@@ -919,9 +901,9 @@ class _GroupsListScreen extends State<GroupsListScreen>
                 Positioned(
                   child: isLoading
                       ? CircularProgressIndicator(
-                    valueColor: new AlwaysStoppedAnimation<Color>(
-                        appColors.loaderColor[300]),
-                  )
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              appColors.loaderColor[300]),
+                        )
                       : Container(),
                 )
               ],
@@ -933,18 +915,20 @@ class _GroupsListScreen extends State<GroupsListScreen>
     );
   }
 
-  Widget menuOverFlow = Container(width: 50,child: Align(
-    alignment: Alignment.centerRight,
-    child: PoupMenuWidgets(
-      itemList: <Choice>[
-        Choice(title: 'Groups', icon: Icons.edit,id: 0),
-        Choice(title: 'Log Out', icon: Icons.delete,id: 1),
-      ],
-      selectedCallBack: (value) {
-        if (value != null) {
-          //Groups List
-          if (value == 0) {
-           /* Navigator.push(
+  Widget menuOverFlow = Container(
+    width: 50,
+    child: Align(
+      alignment: Alignment.centerRight,
+      child: PoupMenuWidgets(
+        itemList: <Choice>[
+          Choice(title: 'Groups', icon: Icons.edit, id: 0),
+          Choice(title: 'Log Out', icon: Icons.delete, id: 1),
+        ],
+        selectedCallBack: (value) {
+          if (value != null) {
+            //Groups List
+            if (value == 0) {
+              /* Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
@@ -952,11 +936,10 @@ class _GroupsListScreen extends State<GroupsListScreen>
                           isAllGroups: true,
                           selectedUChatId: selfUserChatId,
                         )));*/
-          }
-          //New group Creation
-          else if (value == 1)
-         {
-         /*   Navigator.push(
+            }
+            //New group Creation
+            else if (value == 1) {
+              /*   Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) =>
@@ -964,11 +947,12 @@ class _GroupsListScreen extends State<GroupsListScreen>
                           isAllGroups: true,
                           selectedUChatId: selfUserChatId,
                         )));*/
+            }
           }
-        }
-      },
-    ),),);
-
+        },
+      ),
+    ),
+  );
 
   //Pop up menu
   Widget popupMenuButton(ChatGroups mChatGroups) {
@@ -981,7 +965,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
           child: Align(
             child: Image(
               image:
-              AssetImage("packages/firebase_chat/assets/images/dot@3x.png"),
+                  AssetImage("packages/firebase_chat/assets/images/dot@3x.png"),
               color: appColors.appBarLetIconColor[200],
               width: appDimens.imageSquareAccordingScreen(value: 21),
               height: appDimens.imageSquareAccordingScreen(value: 21),
@@ -1011,8 +995,7 @@ class _GroupsListScreen extends State<GroupsListScreen>
 If user see other's group channel so he joined group or not*/
     double imageSize = appDimens.imageSquareAccordingScreen(value: 33);
     double outerCircleSize = appDimens.imageSquareAccordingScreen(value: 36);
-    double imageRadius = appDimens.imageSquareAccordingScreen(value: 33) /
-        2;
+    double imageRadius = appDimens.imageSquareAccordingScreen(value: 33) / 2;
 //print('User List: $userListStr.');
     return count > 0
         ? Padding(
@@ -1032,22 +1015,22 @@ If user see other's group channel so he joined group or not*/
                               color: appColors.white,
                             ),
                             child: FutureBuilder(
-                              future: Firestore.instance
+                              future: FirebaseFirestore.instance
                                   .collection('users')
                                   .where('id', isEqualTo: userListStr[0]["id"])
-                                  .getDocuments(),
+                                  .get(),
                               builder: (BuildContext context,
                                   AsyncSnapshot<dynamic> snapshot) {
                                 if (snapshot.hasData) {
                                   var value = snapshot.data;
-                                  final List<DocumentSnapshot> documents =
-                                      value.documents;
-                                  if (documents.length != 0) {
-                                    print(" UsrData $documents");
-                                    var dta = documents[0].data['imageUrl'];
-                                    var name = documents[0].data['nickName'];
+                                  final List<DocumentSnapshot> docs =
+                                      value.docs;
+                                  if (docs.length != 0) {
+                                    print(" UsrData $docs");
+                                    var dta = docs[0]['imageUrl'];
+                                    var name = docs[0]['nickName'];
                                     return customView.circularImageOrNameView(
-                                            imageSize, imageSize, dta, name);
+                                        imageSize, imageSize, dta, name);
                                   }
                                   return Container();
                                 }
@@ -1067,22 +1050,21 @@ If user see other's group channel so he joined group or not*/
                             color: appColors.white,
                           ),
                           child: FutureBuilder(
-                            future: Firestore.instance
+                            future: FirebaseFirestore.instance
                                 .collection('users')
                                 .where('id', isEqualTo: userListStr[1]["id"])
-                                .getDocuments(),
+                                .get(),
                             builder: (BuildContext context,
                                 AsyncSnapshot<dynamic> snapshot) {
                               if (snapshot.hasData) {
                                 var value = snapshot.data;
-                                final List<DocumentSnapshot> documents =
-                                    value.documents;
-                                if (documents.length != 0) {
-                                  print(" UsrData $documents");
-                                  var dta = documents[0].data['imageUrl'];
-                                  var name = documents[0].data['nickName'];
+                                final List<DocumentSnapshot> docs = value.docs;
+                                if (docs.length != 0) {
+                                  print(" UsrData $docs");
+                                  var dta = docs[0]['imageUrl'];
+                                  var name = docs[0]['nickName'];
                                   return customView.circularImageOrNameView(
-                                          imageSize, imageSize, dta, name);
+                                      imageSize, imageSize, dta, name);
                                 }
                                 return Container();
                               }
@@ -1103,22 +1085,22 @@ If user see other's group channel so he joined group or not*/
                               color: appColors.white,
                             ),
                             child: FutureBuilder(
-                              future: Firestore.instance
+                              future: FirebaseFirestore.instance
                                   .collection('users')
                                   .where('id', isEqualTo: userListStr[2]["id"])
-                                  .getDocuments(),
+                                  .get(),
                               builder: (BuildContext context,
                                   AsyncSnapshot<dynamic> snapshot) {
                                 if (snapshot.hasData) {
                                   var value = snapshot.data;
-                                  final List<DocumentSnapshot> documents =
-                                      value.documents;
-                                  if (documents.length != 0) {
-                                    print(" UsrData $documents");
-                                    var dta = documents[0].data['imageUrl'];
-                                    var name = documents[0].data['nickName'];
+                                  final List<DocumentSnapshot> docs =
+                                      value.docs;
+                                  if (docs.length != 0) {
+                                    print(" UsrData $docs");
+                                    var dta = docs[0]['imageUrl'];
+                                    var name = docs[0]['nickName'];
                                     return customView.circularImageOrNameView(
-                                            imageSize, imageSize, dta, name);
+                                        imageSize, imageSize, dta, name);
                                   }
                                   return Container();
                                 }
@@ -1138,14 +1120,12 @@ If user see other's group channel so he joined group or not*/
                               color: appColors.white,
                             ),
                             child: customView.circleTextView(
-                                    imageSize + 2,
-                                    imageSize + 2,
-                                    appDimens.fontSize(value: 12),
-                                    count,
-                                    appColors
-                                        .textNormalColor[600],
-                                    appColors
-                                        .circleColor[200]),
+                                imageSize + 2,
+                                imageSize + 2,
+                                appDimens.fontSize(value: 12),
+                                count,
+                                appColors.textNormalColor[600],
+                                appColors.circleColor[200]),
                             margin: EdgeInsets.only(left: imageRadius * 0)))
                     : Container(),
               ],
@@ -1175,15 +1155,18 @@ If user see other's group channel so he joined group or not*/
   Widget selectedGroupImageView(String imagePathTemp) {
     return Container(
       height: (appDimens.imageSquareAccordingScreen(value: groupImageHeight)),
-      width: (appDimens.imageSquareAccordingScreen(value: (groupImageWidth + 10))),
+      width:
+          (appDimens.imageSquareAccordingScreen(value: (groupImageWidth + 10))),
       child: Stack(
         children: <Widget>[
           imagePathTemp != null
               ? Container(
                   padding: EdgeInsets.only(top: 15, bottom: 0, right: 10),
                   child: customView.rectImageView(
-                      appDimens.imageSquareAccordingScreen(value: groupImageHeight),
-                      appDimens.imageSquareAccordingScreen(value: groupImageWidth),
+                      appDimens.imageSquareAccordingScreen(
+                          value: groupImageHeight),
+                      appDimens.imageSquareAccordingScreen(
+                          value: groupImageWidth),
                       imagePathTemp))
               : Container(
                   color: appColors.white,
@@ -1201,9 +1184,13 @@ If user see other's group channel so he joined group or not*/
                 height: 35,
                 width: 35,
                 padding: EdgeInsets.fromLTRB(7, 7, 0, 7),
-                child: Icon(Icons.close,size: /*leftIconSize ??*/
-                appDimens.imageSquareAccordingScreen(value: 35),color: /*appBarBackIconColor ??*/
-                appColors.iconColor[500],),
+                child: Icon(
+                  Icons.close,
+                  size: /*leftIconSize ??*/
+                      appDimens.imageSquareAccordingScreen(value: 35),
+                  color: /*appBarBackIconColor ??*/
+                      appColors.iconColor[500],
+                ),
               ),
             ),
             alignment: Alignment.topRight,
@@ -1220,8 +1207,7 @@ If user see other's group channel so he joined group or not*/
         controllers['name'].text == "#error") {
       setState(() {
         if (controllers['name'].text != "#error") {
-          errorMessages['name'] =
-              appString.nameNotBlank;
+          errorMessages['name'] = appString.nameNotBlank;
           isReadyToClick = false;
         }
       });
@@ -1281,12 +1267,12 @@ If user see other's group channel so he joined group or not*/
                         context,
                         MaterialPageRoute(
                             builder: (context) => GroupChatScreen(
-                                    groupInfo: document,
-                                    peerId: document.documentID,
-                                    name: document['name'],
-                                    peerAvatar: document['image'],
-                                    isGroupChat: true,
-                                    isGroupCreated: isGroupCreated)));
+                                groupInfo: document,
+                                peerId: document.id,
+                                name: document['name'],
+                                peerAvatar: document['image'],
+                                isGroupChat: true,
+                                isGroupCreated: isGroupCreated)));
                   } else {
                     Navigator.push(
                         context,
@@ -1295,7 +1281,6 @@ If user see other's group channel so he joined group or not*/
                                 groupInfo: document,
                                 isJoinedGroup: false,
                                 isGroupCreated: isGroupCreated)));
-
                   }
                 },
                 child: Material(
@@ -1318,11 +1303,12 @@ If user see other's group channel so he joined group or not*/
                                         child: Text(
                                           '${document['name']}',
                                           style: TextStyle(
-                                              fontFamily:appFonts.defaultFont,
-                                              fontSize: appDimens.fontSize(value: 18),
+                                              fontFamily: appFonts.defaultFont,
+                                              fontSize:
+                                                  appDimens.fontSize(value: 18),
                                               fontWeight: FontWeight.w500,
-                                              color: appColors
-                                                  .textHeadingColor),
+                                              color:
+                                                  appColors.textHeadingColor),
                                           maxLines: 1,
                                         ),
                                         alignment: Alignment.centerLeft,
@@ -1331,8 +1317,10 @@ If user see other's group channel so he joined group or not*/
                                         child: Text(
                                             '${document['subHeading'] ?? 'NA'}',
                                             style: TextStyle(
-                                                fontFamily:appFonts.defaultFont,
-                                                fontSize: appDimens.fontSize(value: 14),
+                                                fontFamily:
+                                                    appFonts.defaultFont,
+                                                fontSize: appDimens.fontSize(
+                                                    value: 14),
                                                 fontWeight: FontWeight.w400,
                                                 color: appColors
                                                     .textNormalColor[400]),
@@ -1342,7 +1330,8 @@ If user see other's group channel so he joined group or not*/
                                     ],
                                   ),
                                   margin: EdgeInsets.only(
-                                      left: appDimens.horizontalMarginPadding(value: 15)),
+                                      left: appDimens.horizontalMarginPadding(
+                                          value: 15)),
                                 ),
                               ),
                               userImageView(document),
@@ -1360,18 +1349,26 @@ If user see other's group channel so he joined group or not*/
                                             //Right button view
                                             Container(
                                                 margin: EdgeInsets.only(
-                                                    left: appDimens.horizontalMarginPadding(
+                                                    left: appDimens
+                                                        .horizontalMarginPadding(
                                                             value: 5),
-                                                    right: appDimens.horizontalMarginPadding(
+                                                    right: appDimens
+                                                        .horizontalMarginPadding(
                                                             value: 14)),
                                                 child: isJoinedGroup
                                                     ? GestureDetector(
                                                         child: Image(
-                                                          image:
-                                                          AssetImage("packages/firebase_chat/assets/images/check_pink@3x.png"),
-                                                          color: appColors.appBarLetIconColor[200],
-                                                          width: appDimens.imageSquareAccordingScreen(value: 30),
-                                                          height: appDimens.imageSquareAccordingScreen(value: 30),
+                                                          image: AssetImage(
+                                                              "packages/firebase_chat/assets/images/check_pink@3x.png"),
+                                                          color: appColors
+                                                                  .appBarLetIconColor[
+                                                              200],
+                                                          width: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
+                                                          height: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
                                                         ),
                                                         onTap: () =>
                                                             _groupLeftBottomSheet(
@@ -1379,11 +1376,15 @@ If user see other's group channel so he joined group or not*/
                                                       )
                                                     : GestureDetector(
                                                         child: Image(
-                                                          image:
-                                                          AssetImage("packages/firebase_chat/assets/images/add_border@3x.png"),
+                                                          image: AssetImage(
+                                                              "packages/firebase_chat/assets/images/add_border@3x.png"),
                                                           //color: appColors.appBarLetIconColor[200],
-                                                          width: appDimens.imageSquareAccordingScreen(value: 30),
-                                                          height: appDimens.imageSquareAccordingScreen(value: 30),
+                                                          width: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
+                                                          height: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
                                                         ),
                                                         onTap: () =>
                                                             joinGroupDetails(
@@ -1397,18 +1398,24 @@ If user see other's group channel so he joined group or not*/
                                             //Right button view
                                             Container(
                                                 margin: EdgeInsets.only(
-                                                    left: appDimens.horizontalMarginPadding(
+                                                    left: appDimens
+                                                        .horizontalMarginPadding(
                                                             value: 5),
-                                                    right: appDimens.horizontalMarginPadding(
+                                                    right: appDimens
+                                                        .horizontalMarginPadding(
                                                             value: 14)),
                                                 child: isJoinedGroup
                                                     ? GestureDetector(
                                                         child: Image(
-                                                          image:
-                                                          AssetImage("packages/firebase_chat/assets/images/check_pink@3x.png"),
+                                                          image: AssetImage(
+                                                              "packages/firebase_chat/assets/images/check_pink@3x.png"),
                                                           //color: appColors.appBarLetIconColor[200],
-                                                          width: appDimens.imageSquareAccordingScreen(value: 30),
-                                                          height: appDimens.imageSquareAccordingScreen(value: 30),
+                                                          width: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
+                                                          height: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
                                                         ),
                                                         onTap: () =>
                                                             _groupLeftBottomSheet(
@@ -1416,11 +1423,15 @@ If user see other's group channel so he joined group or not*/
                                                       )
                                                     : GestureDetector(
                                                         child: Image(
-                                                          image:
-                                                          AssetImage("packages/firebase_chat/assets/images/add_border@3x.png"),
+                                                          image: AssetImage(
+                                                              "packages/firebase_chat/assets/images/add_border@3x.png"),
                                                           //color: appColors.appBarLetIconColor[200],
-                                                          width: appDimens.imageSquareAccordingScreen(value: 30),
-                                                          height: appDimens.imageSquareAccordingScreen(value: 30),
+                                                          width: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
+                                                          height: appDimens
+                                                              .imageSquareAccordingScreen(
+                                                                  value: 30),
                                                         ),
                                                         onTap: () =>
                                                             joinGroupDetails(
@@ -1521,7 +1532,8 @@ If user see other's group channel so he joined group or not*/
         isSubLoading = true;
       });
       if (imageFile != null) {
-        selectedGroupImageUrl = await _firebaseStore.uploadFileFireBase(imageFile:imageFile);
+        selectedGroupImageUrl =
+            await _firebaseStore.uploadFileFireBase(imageFile: imageFile);
       }
       /*String uName = await sharedPreferencesFile.readStr('nickName');
       String imageUser = await sharedPreferencesFile.readStr('imageUrl');
@@ -1530,11 +1542,14 @@ If user see other's group channel so he joined group or not*/
       String imageUser = "";
       String fcmToken = "";
 
-      User mUser = new User(
+      /* User mUser = new User(
           firstName: uName,
           imageUrl: imageUser,
           documentID: uId,
-          fcmToken: fcmToken);
+          fcmToken: fcmToken);*/
+      UsersDetails mUser = new UsersDetails(
+          name: uName, imageUrl: imageUser, id: uId, pushToken: fcmToken);
+
       //Updated group details
       if (isEditGroupDetails) {
         //ChatGroups chatGroup, User user
@@ -1545,7 +1560,7 @@ If user see other's group channel so he joined group or not*/
             subHeading: controllers["subHeader"].text.toString(),
             description: controllers["description"].text.toString(),
             image: selectedGroupImageUrl);
-        await _firebaseStore.updatedChatGroupFireBase(chatGroup: chatGroup,user: mUser);
+        await _firebaseStore.updatedChatGroupFireBase(chatGroup: chatGroup);
         selectedGroupImageUrl = null;
       }
       //Create new group
@@ -1558,7 +1573,8 @@ If user see other's group channel so he joined group or not*/
             subHeading: controllers["subHeader"].text.toString(),
             description: controllers["description"].text.toString(),
             image: selectedGroupImageUrl);
-        await _firebaseStore.createChatGroupFireBase(chatGroup:chatGroup, user:mUser);
+        await _firebaseStore.createChatGroupFireBase(
+            chatGroup: chatGroup, user: mUser);
         selectedGroupImageUrl = null;
       }
       try {
@@ -1585,20 +1601,17 @@ If user see other's group channel so he joined group or not*/
       isLoading = true;
     });
 
-    String uName =
-        await sharedPreferencesFile.readStr('nickName');
-    String imageUser =
-        await sharedPreferencesFile.readStr('imageUrl');
-    String fcmToken =
-        await sharedPreferencesFile.readStr('fcmToken');
+    String uName = await sharedPreferencesFile.readStr('nickName');
+    String imageUser = await sharedPreferencesFile.readStr('imageUrl');
+    String fcmToken = await sharedPreferencesFile.readStr('fcmToken');
 
-    User mUser = new User(
-        firstName: uName,
+    UsersDetails mUser = new UsersDetails(
+        name: uName,
         imageUrl: imageUser,
-        documentID: currentLoggedInChatUid,
-        fcmToken: fcmToken);
+        id: currentLoggedInChatUid,
+        pushToken: fcmToken);
 
-    await _firebaseStore.joinChatGroupFireBase(groupId: groupId, user:mUser);
+    await _firebaseStore.joinChatGroupFireBase(groupId: groupId, user: mUser);
 
     setState(() {
       isLoading = false;
@@ -1616,20 +1629,17 @@ If user see other's group channel so he joined group or not*/
       isLoading = true;
     });
 
-    String uName =
-        await sharedPreferencesFile.readStr('nickName');
-    String imageUser =
-        await sharedPreferencesFile.readStr('imageUrl');
-    String fcmToken =
-        await sharedPreferencesFile.readStr('fcmToken');
+    String uName = await sharedPreferencesFile.readStr('nickName');
+    String imageUser = await sharedPreferencesFile.readStr('imageUrl');
+    String fcmToken = await sharedPreferencesFile.readStr('fcmToken');
 
-    User mUser = new User(
-        firstName: uName,
+    UsersDetails mUser = new UsersDetails(
+        name: uName,
         imageUrl: imageUser,
-        documentID: currentLoggedInChatUid,
-        fcmToken: fcmToken);
+        id: currentLoggedInChatUid,
+        pushToken: fcmToken);
 
-    await _firebaseStore.leftChatGroupFireBase(groupId:groupId,user: mUser);
+    await _firebaseStore.leftChatGroupFireBase(groupId: groupId, user: mUser);
 
     setState(() {
       isLoading = false;
@@ -1649,7 +1659,7 @@ List<ChoiceTemp> choices = <ChoiceTemp>[
 ];
 
 class ChoiceTemp {
-  ChoiceTemp({this.title, this.icon,this.mChatGroups,this.id});
+  ChoiceTemp({this.title, this.icon, this.mChatGroups, this.id});
   final int id;
   final String title;
   ChatGroups mChatGroups;
